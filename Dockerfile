@@ -1,10 +1,11 @@
-FROM php:7.1-apache-stretch
+FROM php:7.3-fpm
 
 ENV BOOKSTACK=BookStack \
-    BOOKSTACK_VERSION=0.25.2 \
+    BOOKSTACK_VERSION=0.25.4 \
     BOOKSTACK_HOME="/var/www/bookstack"
 
-RUN apt-get update && apt-get install -y git zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev wget libldap2-dev libtidy-dev \
+RUN apt-get update && apt-get install -y git libzip-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev wget libldap2-dev libtidy-dev \
+   && docker-php-ext-configure zip --with-libzip \
    && docker-php-ext-install pdo pdo_mysql mbstring zip tidy \
    && docker-php-ext-configure ldap \
    && docker-php-ext-install ldap \
@@ -18,21 +19,27 @@ RUN apt-get update && apt-get install -y git zlib1g-dev libfreetype6-dev libjpeg
    && chown -R www-data:www-data $BOOKSTACK_HOME \
    && apt-get -y autoremove \
    && apt-get clean \
-   && rm -rf /var/lib/apt/lists/* /var/tmp/* /etc/apache2/sites-enabled/000-*.conf
+   && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 COPY php.ini /usr/local/etc/php/php.ini
-COPY bookstack.conf /etc/apache2/sites-enabled/bookstack.conf
-RUN a2enmod rewrite
 
 COPY docker-entrypoint.sh /
 
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
+
+COPY env_secrets_expand.sh /
+
+RUN ["chmod", "+x", "/env_secrets_expand.sh"]
+
 WORKDIR $BOOKSTACK_HOME
 
-EXPOSE 80
+EXPOSE 9000
 
-VOLUME ["$BOOKSTACK_HOME/public/uploads","$BOOKSTACK_HOME/public/storage"]
+#VOLUME ["$BOOKSTACK_HOME/public/uploads","$BOOKSTACK_HOME/public/storage"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["php-fpm", "-F"]
 
 ARG BUILD_DATE
 ARG VCS_REF

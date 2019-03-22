@@ -1,4 +1,7 @@
 #!/bin/bash
+
+source /env_secrets_expand.sh
+
 set -e
 
 echoerr() { echo "$@" 1>&2; }
@@ -26,18 +29,27 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       DB_PASSWORD=${DB_PASSWORD:-password}
 
       # Cache and session
-      CACHE_DRIVER=file
-      SESSION_DRIVER=file
+      #CACHE_DRIVER=file
+      #SESSION_DRIVER=file
       # If using Memcached, comment the above and uncomment these
       #CACHE_DRIVER=memcached
       #SESSION_DRIVER=memcached
+      # If using Redis, comment the above and uncomment these
+      CACHE_DRIVER=redis
+      SESSION_DRIVER=redis
       QUEUE_DRIVER=sync
 
       # Memcached settings
       # If using a UNIX socket path for the host, set the port to 0
       # This follows the following format: HOST:PORT:WEIGHT
       # For multiple servers separate with a comma
-      MEMCACHED_SERVERS=127.0.0.1:11211:100
+      #MEMCACHED_SERVERS=127.0.0.1:11211:100
+
+      # Redis settings
+      # If using a UNIX socket path for the host, set the port to 0
+      # This follows the following format: HOST:PORT:DATABASE
+      # For multiple servers separate with a comma
+      REDIS_SERVERS=redis:6379:0
 
       # Storage
       STORAGE_TYPE=${STORAGE_TYPE:-local}
@@ -46,6 +58,9 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       STORAGE_S3_SECRET=${STORAGE_S3_SECRET:-false}
       STORAGE_S3_REGION=${STORAGE_S3_REGION:-false}
       STORAGE_S3_BUCKET=${STORAGE_S3_BUCKET:-false}
+      # S3 endpoint to use for storage calls
+      # Only set this if using a non-Amazon s3-compatible service such as Minio
+      STORAGE_S3_ENDPOINT=${STORAGE_S3_ENDPOINT:-false}
       # Storage URL
       # Used to prefix image urls for when using custom domains/cdns
       STORAGE_URL=${STORAGE_URL:-false}
@@ -118,4 +133,4 @@ php artisan cache:clear
 
 php artisan view:clear
 
-exec apache2-foreground
+exec "$@"
