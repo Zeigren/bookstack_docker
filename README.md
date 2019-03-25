@@ -9,6 +9,8 @@
 - Mariadb 10.3/latest
 - Redis
 
+### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
+
 ## Configuration
 
 This is designed to be run under [Docker Swarm](https://docs.docker.com/engine/swarm/) mode, don't know why you can't use secrets with just compose but it is what it is.
