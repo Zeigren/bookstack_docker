@@ -1,72 +1,40 @@
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-## Current Version: [0.25.2](https://github.com/SolidNerd/docker-bookstack/blob/master/Dockerfile)
+## Current Version: 0.25.5
 
-### Changes
-In 0.12.2 we removed `DB_PORT` . You can now specify the port via `DB_HOST` like `DB_HOST=mysql:3306`
+### Stack
 
-### Quickstart
-With Docker Compose is a Quickstart very easy. Run the following command:
+- BookStack Version 0.25.5
+- Nginx Alpine
+- Mariadb 10.3/latest
+- Redis
 
-```
-docker-compose up
-```
+## Configuration
 
-and after that open your Browser and go to [http://localhost:8080](http://localhost:8080) .
+This is designed to be run under [Docker Swarm](https://docs.docker.com/engine/swarm/) mode, don't know why you can't use secrets with just compose but it is what it is.
 
-### Issues
+I like using [Portainer](https://www.portainer.io/) since it makes all the swarm configuration and tinkering easier, but it's not necessary.
 
-If you have any issues feel free to create an [issue on GitHub](https://github.com/solidnerd/docker-bookstack/issues).
+I personally use this with [Traefik](https://traefik.io/) as a reverse proxy, but also not necessary.
 
+You'll need to create these [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/):
 
-### How to use the Image without Docker compose
-Networking changed in Docker v1.9, so you need to do one of the following steps.
+- YOURDOMAIN.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
+- YOURDOMAIN.com.key = The SSL key for your domain (you'll need to create/copy this)
+- dhparam.pem = Diffie-Hellman parameter (you'll need to create/copy this)
+- bookstacksql_root_password = Root password for your SQL database
+- bookstacksql_password = BookStack user password for your SQL database
 
-#### Docker < v1.9
-1. MySQL Container:
-```bash
-docker run -d --name bookstack-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=bookstack -e MYSQL_USER=bookstack -e MYSQL_PASSWORD=secret mysql:5.7.21
-```
-2. BookStack Container:
-```bash
-docker run --name my-bookstack -d --link bookstack-mysql:mysql -p 8080:80 solidnerd/bookstack:0.25.2
-```
+You'll also need to create this [Docker Config](https://docs.docker.com/engine/swarm/configs/):
 
-#### Docker 1.9+
+- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of 'YOURDOMAIN')
 
-1.Create a shared network:
+Make whatever changes you need to docker-stack.yml (replace all instances of 'YOURDOMAIN').
 
-```bash
-docker network create bookstack_nw
-```
+Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
 
-2.MySQL container :
-```bash
-docker run -d --net bookstack_nw  \
--e MYSQL_ROOT_PASSWORD=secret \
--e MYSQL_DATABASE=bookstack \
--e MYSQL_USER=bookstack \
--e MYSQL_PASSWORD=secret \
- --name="bookstack_db" \
- mysql:5.7.21
-```
-
-
-3.Create BookStack Container
-
-```bash
-docker run -d --net bookstack_nw  \
--e DB_HOST=bookstack_db:3306 \
--e DB_DATABASE=bookstack \
--e DB_USERNAME=bookstack \
--e DB_PASSWORD=secret \
--p 8080:80 \
- solidnerd/bookstack:0.25.2
-```
-
-After the steps you can visit [http://localhost:8080](http://localhost:8080) . You can login with username 'admin@admin.com' and password 'password'.
-
+Once it's started you can login with username 'admin@admin.com' and password 'password'.
 
 ### Inspiration
 
-This is a fork of [Kilhog/docker-bookstack](https://github.com/Kilhog/docker-bookstack). Kilhog did the intial work, but I want to go in a different direction.
+This is a fork of [solidnerd/docker-bookstack](https://github.com/solidnerd/docker-bookstack) which itself is a fork of [Kilhog/docker-bookstack](https://github.com/Kilhog/docker-bookstack).
