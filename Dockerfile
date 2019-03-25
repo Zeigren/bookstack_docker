@@ -1,7 +1,7 @@
 FROM php:7.3-fpm
 
 ENV BOOKSTACK=BookStack \
-    BOOKSTACK_VERSION=0.25.4 \
+    BOOKSTACK_VERSION=0.25.5 \
     BOOKSTACK_HOME="/var/www/bookstack"
 
 RUN apt-get update && apt-get install -y git libzip-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev wget libldap2-dev libtidy-dev \
@@ -35,20 +35,6 @@ WORKDIR $BOOKSTACK_HOME
 
 EXPOSE 9000
 
-#VOLUME ["$BOOKSTACK_HOME/public/uploads","$BOOKSTACK_HOME/public/storage"]
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 CMD ["php-fpm", "-F"]
-
-ARG BUILD_DATE
-ARG VCS_REF
-LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.docker.dockerfile="/Dockerfile" \
-      org.label-schema.license="MIT" \
-      org.label-schema.name="bookstack" \
-      org.label-schema.vendor="solidnerd" \
-      org.label-schema.url="https://github.com/solidnerd/docker-bookstack/" \
-      org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/solidnerd/docker-bookstack.git" \
-      org.label-schema.vcs-type="Git"

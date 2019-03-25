@@ -29,27 +29,23 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       DB_PASSWORD=${DB_PASSWORD:-password}
 
       # Cache and session
-      #CACHE_DRIVER=file
-      #SESSION_DRIVER=file
-      # If using Memcached, comment the above and uncomment these
-      #CACHE_DRIVER=memcached
-      #SESSION_DRIVER=memcached
-      # If using Redis, comment the above and uncomment these
-      CACHE_DRIVER=redis
-      SESSION_DRIVER=redis
-      QUEUE_DRIVER=sync
-
-      # Memcached settings
+      # Can be 'file', 'database', 'memcached' or 'redis'
+      CACHE_DRIVER=${CACHE_DRIVER:-file}
+      SESSION_DRIVER=${SESSION_DRIVER:-file}
+      # Memcached server configuration
       # If using a UNIX socket path for the host, set the port to 0
       # This follows the following format: HOST:PORT:WEIGHT
       # For multiple servers separate with a comma
       #MEMCACHED_SERVERS=127.0.0.1:11211:100
-
-      # Redis settings
-      # If using a UNIX socket path for the host, set the port to 0
+      # Redis server configuration
       # This follows the following format: HOST:PORT:DATABASE
-      # For multiple servers separate with a comma
+      # or, if using a password: HOST:PORT:DATABASE:PASSWORD
+      # For multiple servers separate with a comma. These will be clustered.
       REDIS_SERVERS=redis:6379:0
+      # Queue driver to use
+      # Queue not really currently used but may be configurable in the future.
+      # Would advise not to change this for now.
+      QUEUE_DRIVER=sync
 
       # Storage
       STORAGE_TYPE=${STORAGE_TYPE:-local}

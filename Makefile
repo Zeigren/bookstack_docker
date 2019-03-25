@@ -36,4 +36,3 @@ e2e:
 	@docker run --network container:$$(docker-compose -f docker-compose.test.yml ps -q bookstack) \
 		appropriate/curl --retry 15 --retry-delay 5 --retry-connrefused http://localhost/login
 	@docker-compose  down -v
-
