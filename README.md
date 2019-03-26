@@ -8,6 +8,7 @@
 - Nginx Alpine
 - Mariadb 10.3/latest
 - Redis
+- PHP 7.3-fpm
 
 ### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
 
