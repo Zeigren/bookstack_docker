@@ -2,3 +2,4 @@ README.md
 LICENSE
 .git
 docker-stack.yml
+bookstack_vhost.conf

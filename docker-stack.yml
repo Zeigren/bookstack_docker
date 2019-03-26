@@ -50,12 +50,20 @@ services:
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - STORAGE_TYPE=local_secure
+    - REDIS_SERVERS=redis:6379:0
+#    - MEMCACHED_SERVERS=    
 #    - STORAGE_S3_KEY=
 #    - STORAGE_S3_SECRET=
 #    - STORAGE_S3_REGION=
 #    - STORAGE_S3_BUCKET=
 #    - STORAGE_URL=
 #    - STORAGE_S3_ENDPOINT=
+#   PHP.ini settings
+#    - post_max_size=0
+#    - upload_max_filesize=0
+#    - memory_limit=1028M
+#    - expose_php=off
+#    - cgifix_pathinfo=0
     volumes:
     - bookstack_storage:/var/www/bookstack/storage
     - bookstack_public_storage:/var/www/bookstack/public/storage

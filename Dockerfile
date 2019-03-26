@@ -21,8 +21,6 @@ RUN apt-get update && apt-get install -y git libzip-dev libfreetype6-dev libjpeg
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
-COPY php.ini /usr/local/etc/php/php.ini
-
 COPY docker-entrypoint.sh /
 
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]

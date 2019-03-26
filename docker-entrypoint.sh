@@ -11,7 +11,7 @@ IFS=":" read -r DB_HOST_NAME DB_PORT <<< "$DB_HOST"
 DB_PORT=${DB_PORT:-3306}
 
 if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
-  if [[ "${DB_HOST}" ]]; then
+  if [[ -n "${DB_HOST}" ]]; then
   cat > "$BOOKSTACK_HOME/.env" <<EOF
       # Environment
       APP_ENV=production
@@ -36,12 +36,12 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       # If using a UNIX socket path for the host, set the port to 0
       # This follows the following format: HOST:PORT:WEIGHT
       # For multiple servers separate with a comma
-      #MEMCACHED_SERVERS=127.0.0.1:11211:100
+      MEMCACHED_SERVERS=${MEMCACHED_SERVERS:-false}
       # Redis server configuration
       # This follows the following format: HOST:PORT:DATABASE
       # or, if using a password: HOST:PORT:DATABASE:PASSWORD
       # For multiple servers separate with a comma. These will be clustered.
-      REDIS_SERVERS=redis:6379:0
+      REDIS_SERVERS=${REDIS_SERVERS:-false}
       # Queue driver to use
       # Queue not really currently used but may be configurable in the future.
       # Would advise not to change this for now.
@@ -90,11 +90,23 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-null}
       # URL used for social login redirects, NO TRAILING SLASH
 EOF
+
 sed -ie "s/single/errorlog/g" config/app.php
     else
         echo >&2 'error: missing DB_HOST environment variable'
         exit 1
     fi
+fi
+
+if [ ! -f "/usr/local/etc/php/php.ini" ]; then
+  cat > "/usr/local/etc/php/php.ini" <<EOF
+[PHP]
+post_max_size = ${post_max_size:-0}
+upload_max_filesize = ${upload_max_filesize:-0}
+memory_limit = ${memory_limit:-1028M}
+expose_php = ${expose_php:-off}
+cgi.fix_pathinfo = ${cgifix_pathinfo:-0}
+EOF
 fi
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
@@ -119,7 +131,6 @@ composer install
 php artisan key:generate
 
 php artisan migrate --force
-
 
 echo "Setting folder permissions for uploads"
 chown -R www-data:www-data public/uploads && chmod -R 775 public/uploads
