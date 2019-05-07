@@ -14,7 +14,7 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
   if [[ -n "${DB_HOST}" ]]; then
   cat > "$BOOKSTACK_HOME/.env" <<EOF
       # Environment
-      APP_ENV=production
+      APP_ENV=${APP_ENV:-production}
       APP_DEBUG=${APP_DEBUG:-false}
       APP_KEY=${APP_KEY:-SomeRandomStringWith32Characters}
 

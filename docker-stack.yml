@@ -42,6 +42,7 @@ services:
     depends_on:
     - mariadb
     environment:
+    - APP_ENV=production
     - DB_HOST=mariadb:3306
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
