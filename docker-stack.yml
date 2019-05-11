@@ -38,7 +38,7 @@ services:
       - bookstack_db
 
   bookstack:
-    image: zeigren/bookstack:0.26.0
+    image: zeigren/bookstack:0.26.1
     depends_on:
     - mariadb
     environment:

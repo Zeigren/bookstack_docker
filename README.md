@@ -1,6 +1,6 @@
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-## Current Version: 0.25.5
+## Current Version: 0.26.1
 
 ### Stack
 
@@ -37,6 +37,10 @@ Make whatever changes you need to docker-stack.yml (replace all instances of 'YO
 Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
 
 Once it's started you can login with username 'admin@admin.com' and password 'password'.
+
+## Issues
+
+Upgrading from 0.25.5 to 0.26.* isn't working properly.
 
 ### Inspiration
 
