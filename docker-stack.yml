@@ -38,7 +38,7 @@ services:
       - bookstack_db
 
   bookstack:
-    image: zeigren/bookstack:0.26.2
+    image: zeigren/bookstack:0.27.4
     depends_on:
     - mariadb
     environment:
@@ -51,6 +51,8 @@ services:
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - STORAGE_TYPE=local_secure
+#    - STORAGE_IMAGE_TYPE=
+#    - STORAGE_ATTACHMENT_TYPE=
     - REDIS_SERVERS=redis:6379:0
 #    - MEMCACHED_SERVERS=    
 #    - STORAGE_S3_KEY=

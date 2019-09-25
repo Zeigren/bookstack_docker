@@ -48,7 +48,10 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       QUEUE_DRIVER=sync
 
       # Storage
+      # Can be 'local', 'local_secure' or 's3'
       STORAGE_TYPE=${STORAGE_TYPE:-local}
+      STORAGE_IMAGE_TYPE=${STORAGE_IMAGE_TYPE:-local}
+      STORAGE_ATTACHMENT_TYPE=${STORAGE_IMAGE_TYPE:-local_secure}
       # Amazon S3 Config
       STORAGE_S3_KEY=${STORAGE_S3_KEY:-false}
       STORAGE_S3_SECRET=${STORAGE_S3_SECRET:-false}
@@ -88,6 +91,10 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       MAIL_USERNAME=${MAIL_USERNAME:-null}
       MAIL_PASSWORD=${MAIL_PASSWORD:-null}
       MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-null}
+      # Mail sending options
+      MAIL_FROM=${MAIL_FROM:-null}
+      MAIL_FROM_NAME=${MAIL_FROM_NAME:-null}
+
       # URL used for social login redirects, NO TRAILING SLASH
 EOF
 
