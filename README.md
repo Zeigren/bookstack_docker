@@ -1,10 +1,10 @@
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-## Current Version: 0.26.2
+## Current Version: 0.27.4
 
 ### Stack
 
-- BookStack Version 0.26.2
+- BookStack Version 0.27.4
 - Nginx Alpine
 - Mariadb 10.3/latest
 - Redis
