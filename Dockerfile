@@ -4,7 +4,7 @@ ENV BOOKSTACK=BookStack \
     BOOKSTACK_VERSION=0.27.4 \
     BOOKSTACK_HOME="/var/www/bookstack"
 
-RUN apt-get update && apt-get install -y --no-install-recommends git zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev wget libldap2-dev libtidy-dev libxml2-dev fontconfig fonts-freefont-ttf wkhtmltopdf tar curl \
+RUN apt-get update && apt-get install -y --no-install-recommends git libzip-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev wget libldap2-dev libtidy-dev libxml2-dev fontconfig fonts-freefont-ttf wkhtmltopdf tar curl \
    && docker-php-ext-install dom pdo pdo_mysql zip tidy  \
    && docker-php-ext-configure ldap \
    && docker-php-ext-install ldap \
