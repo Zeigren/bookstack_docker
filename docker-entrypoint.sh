@@ -98,7 +98,7 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       # URL used for social login redirects, NO TRAILING SLASH
 EOF
 
-sed -ie "s/single/errorlog/g" config/app.php
+sed -ie "s/single/errorlog/g" app/Config/app.php
     else
         echo >&2 'error: missing DB_HOST environment variable'
         exit 1
