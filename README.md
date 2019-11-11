@@ -11,6 +11,8 @@
 - PHP 7.3-fpm
 
 ### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
+### [Main Repository](https://projects.zeigren.com/diffusion/4/)
+### [Project](https://projects.zeigren.com/project/view/36/)
 
 ## Configuration
 
