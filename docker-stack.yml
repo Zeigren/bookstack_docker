@@ -38,7 +38,7 @@ services:
       - bookstack_db
 
   bookstack:
-    image: zeigren/bookstack:0.27.4
+    image: zeigren/bookstack:0.27.5
     depends_on:
     - mariadb
     environment:
@@ -67,6 +67,16 @@ services:
 #    - memory_limit=1028M
 #    - expose_php=off
 #    - cgifix_pathinfo=0
+#   Mail Settings
+#    - MAIL_DRIVER=
+#    - MAIL_HOST=
+#    - MAIL_PORT=
+#    - MAIL_USERNAME=
+#    - MAIL_PASSWORD=DOCKER-SECRET->mail_password
+#    - MAIL_ENCRYPTION=
+#   Mail sending options
+#    - MAIL_FROM=
+#    - MAIL_FROM_NAME=
     volumes:
     - bookstack_storage:/var/www/bookstack/storage
     - bookstack_public_storage:/var/www/bookstack/public/storage
@@ -76,6 +86,7 @@ services:
     - bookstack_db
     secrets:
       - bookstacksql_password
+      - mail_password
 
   redis:
     image: redis:alpine
@@ -98,6 +109,8 @@ secrets:
   YOURDOMAIN.com.key:
     external: true
   dhparam.pem:
+    external: true
+  mail_password:
     external: true
 
 networks:
