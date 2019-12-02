@@ -1,3 +1,5 @@
+[![Docker Hub](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/repository/docker/zeigren/bookstack)
+
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
 ## Current Version: 0.27.5
