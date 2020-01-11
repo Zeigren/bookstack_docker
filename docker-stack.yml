@@ -15,10 +15,10 @@ services:
       - source: bookstack_vhost
         target: /etc/nginx/conf.d/default.conf
     secrets:
-      - source: YOURDOMAIN.com.crt
-        target: /etc/nginx/certs/YOURDOMAIN.com.crt
-      - source: YOURDOMAIN.com.key
-        target: /etc/nginx/certs/YOURDOMAIN.com.key
+      - source: yourdomain.com.crt
+        target: /etc/nginx/certs/yourdomain.com.crt
+      - source: yourdomain.com.key
+        target: /etc/nginx/certs/yourdomain.com.key
       - source: dhparam.pem
         target: /etc/nginx/dhparam/dhparam.pem
 
@@ -31,6 +31,8 @@ services:
       - MYSQL_DATABASE=bookstack
       - MYSQL_USER=bookstack
       - MYSQL_PASSWORD_FILE=/run/secrets/bookstacksql_password
+# work around for https://github.com/docker-library/mariadb/issues/262
+      - MYSQL_INITDB_SKIP_TZINFO=1
     secrets:
       - bookstacksql_root_password
       - bookstacksql_password
@@ -38,7 +40,7 @@ services:
       - bookstack_db
 
   bookstack:
-    image: zeigren/bookstack:0.27.5
+    image: zeigren/bookstack:latest
     depends_on:
     - mariadb
     environment:
@@ -47,7 +49,7 @@ services:
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
-    - APP_URL=https://bookstack.YOURDOMAIN.com
+    - APP_URL=https://bookstack.yourdomain.com
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - STORAGE_TYPE=local_secure
@@ -104,9 +106,9 @@ secrets:
     external: true
   bookstacksql_password:
     external: true
-  YOURDOMAIN.com.crt:
+  yourdomain.com.crt:
     external: true
-  YOURDOMAIN.com.key:
+  yourdomain.com.key:
     external: true
   dhparam.pem:
     external: true

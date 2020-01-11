@@ -1,14 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 source /env_secrets_expand.sh
 
 set -e
 
 echoerr() { echo "$@" 1>&2; }
-
-# Split out host and port from DB_HOST env variable
-IFS=":" read -r DB_HOST_NAME DB_PORT <<< "$DB_HOST"
-DB_PORT=${DB_PORT:-3306}
 
 if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
   if [[ -n "${DB_HOST}" ]]; then
@@ -116,24 +112,15 @@ cgi.fix_pathinfo = ${cgifix_pathinfo:-0}
 EOF
 fi
 
-echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
+echoerr "wait-for-db: waiting for ${DB_HOST}"
 
-timeout 15 bash <<EOT
-while ! (echo > /dev/tcp/${DB_HOST_NAME}/${DB_PORT}) >/dev/null 2>&1;
-    do sleep 1;
-done;
-EOT
-RESULT=$?
+/wait-for.sh ${DB_HOST} -- echo 'success'
 
-if [ $RESULT -eq 0 ]; then
-  # sleep another second for so that we don't get a "the database system is starting up" error
-  sleep 1
-  echoerr "wait-for-db: done"
-else
-  echoerr "wait-for-db: timeout out after 15 seconds waiting for ${DB_HOST_NAME}:${DB_PORT}"
-fi
+echo "wait a few seconds"
 
-composer install
+sleep 10s
+
+composer install --no-dev
 
 php artisan key:generate
 

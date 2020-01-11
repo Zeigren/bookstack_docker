@@ -1,19 +1,35 @@
-[![Docker Hub](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/repository/docker/zeigren/bookstack)
+[![](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/repository/docker/zeigren/bookstack "Docker Hub")
+[![](https://images.microbadger.com/badges/image/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+[![](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+[![](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 
-## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
+## Docker Stack For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-## Current Version: 0.27.5
+## Tags
 
-### Stack
+- latest
+- 0.27.5
+- 0.27.4
+- 0.26.2
+- 0.26.1
+- 0.26.0
+- 0.25.5
 
-- BookStack Version 0.27.5
+## Stack
+
+- BookStack - PHP 7.4-fpm-alpine
 - Nginx Alpine
-- Mariadb 10.3/latest
+- MariaDB 10.4/latest
 - Redis Alpine
-- PHP 7.3-fpm
+
+## Links
 
 ### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
+
+### [GitHub](https://github.com/Zeigren/docker-swarm-bookstack)
+
 ### [Main Repository](https://projects.zeigren.com/diffusion/4/)
+
 ### [Project](https://projects.zeigren.com/project/view/36/)
 
 ## Configuration
@@ -26,26 +42,26 @@ I personally use this with [Traefik](https://traefik.io/) as a reverse proxy, bu
 
 You'll need to create these [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/):
 
-- YOURDOMAIN.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
-- YOURDOMAIN.com.key = The SSL key for your domain (you'll need to create/copy this)
+- yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
+- yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
 - dhparam.pem = Diffie-Hellman parameter (you'll need to create/copy this)
 - bookstacksql_root_password = Root password for your SQL database
 - bookstacksql_password = BookStack user password for your SQL database
 
 You'll also need to create this [Docker Config](https://docs.docker.com/engine/swarm/configs/):
 
-- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of 'YOURDOMAIN')
+- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of `yourdomain`)
 
-Make whatever changes you need to docker-stack.yml (replace all instances of 'YOURDOMAIN').
+Make whatever changes you need to docker-stack.yml (replace all instances of `yourdomain`).
 
 Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
 
-Once it's started you can login with username 'admin@admin.com' and password 'password'.
+Once it's started you can login with username `admin@admin.com` and password `password`.
 
 ## Issues
 
 Upgrading from 0.25.5 to 0.26.* isn't working properly.
 
-### Inspiration
+## Inspiration
 
 This is a fork of [solidnerd/docker-bookstack](https://github.com/solidnerd/docker-bookstack) which itself is a fork of [Kilhog/docker-bookstack](https://github.com/Kilhog/docker-bookstack).
