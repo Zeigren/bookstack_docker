@@ -112,6 +112,23 @@ cgi.fix_pathinfo = ${cgifix_pathinfo:-0}
 EOF
 fi
 
+if [ ! -e "/usr/local/etc/php/conf.d/opcache.ini" ]; then
+  cat > "/usr/local/etc/php/conf.d/opcache.ini" <<EOF
+opcache.memory_consumption=${opcache_memory_consumption:-64}
+opcache.max_accelerated_files=${opcache_max_accelerated_files:-4000}
+opcache.revalidate_freq=${opcache_revalidate_freq:-60}
+opcache.fast_shutdown=${opcache_fast_shutdown:-1}
+opcache.enable_cli=${opcache_enable_cli:-1}
+opcache.validate_timestamps=${opcache_validate_timestamps:-0}
+EOF
+fi
+
+# Set PHP-FPM conf
+sed -i "s/user =.*/user = bookstack/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/group =.*/group = www-data/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm =.*/pm = ${FPM_PM:-ondemand}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.max_children =.*/pm.max_children = ${FPM_MAX_CHILDREN:-8}/" /usr/local/etc/php-fpm.d/www.conf
+
 echoerr "wait-for-db: waiting for ${DB_HOST}"
 
 /wait-for.sh ${DB_HOST} -- echo 'success'
@@ -127,8 +144,8 @@ php artisan key:generate
 php artisan migrate --force
 
 echo "Setting folder permissions for uploads"
-chown -R www-data:www-data public/uploads && chmod -R 775 public/uploads
-chown -R www-data:www-data storage/uploads && chmod -R 775 storage/uploads
+chown -R bookstack:www-data public/uploads && chmod -R 775 public/uploads
+chown -R bookstack:www-data storage/uploads && chmod -R 775 storage/uploads
 
 php artisan cache:clear
 

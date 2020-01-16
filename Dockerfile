@@ -13,7 +13,7 @@ LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.vendor="zeigren" \
       org.label-schema.url="https://hub.docker.com/r/zeigren/bookstack" \
       org.label-schema.vcs-ref=$COMMIT \
-      org.label-schema.vcs-url=$URL \
+      org.label-schema.vcs-url=https://github.com/Zeigren/docker-swarm-bookstack \
       org.label-schema.vcs-type="Git" \
       org.label-schema.vcs-branch=$BRANCH \
       org.label-schema.version="$VERSION" \
@@ -29,7 +29,8 @@ RUN apk update \
     $PHPIZE_DEPS libpng-dev freetype-dev libjpeg-turbo-dev \
     && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-configure ldap \
-    && docker-php-ext-install pdo_mysql tidy gd ldap \
+    && docker-php-ext-configure opcache --enable-opcache \
+    && docker-php-ext-install pdo_mysql tidy gd ldap opcache \
     && cd /var/www && curl -sS https://getcomposer.org/installer | php \
     && mv /var/www/composer.phar /usr/local/bin/composer \
     && BOOKSTACK_VERSION=$( echo $VERSION | grep -Eo [0-9.]+ | head -1 ) \
@@ -39,7 +40,8 @@ RUN apk update \
     && rm ${BOOKSTACK}.tar.gz \
     && mv /usr/bin/wkhtmltopdf ${BOOKSTACK_HOME} \
     && cd $BOOKSTACK_HOME && composer install --no-dev \
-    && chown -R www-data:www-data $BOOKSTACK_HOME \
+    && adduser -D -S -G www-data bookstack \
+    && chown -R bookstack:www-data $BOOKSTACK_HOME \
     && apk del .build-deps \
     && rm -rf /root/.composer
 
