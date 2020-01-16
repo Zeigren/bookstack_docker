@@ -1,4 +1,4 @@
-[![](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/repository/docker/zeigren/bookstack "Docker Hub")
+[![](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/r/zeigren/bookstack)
 [![](https://images.microbadger.com/badges/image/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 [![](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 [![](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
