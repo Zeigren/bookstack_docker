@@ -13,7 +13,7 @@ LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.vendor="zeigren" \
       org.label-schema.url="https://hub.docker.com/r/zeigren/bookstack" \
       org.label-schema.vcs-ref=$COMMIT \
-      org.label-schema.vcs-url=https://github.com/Zeigren/docker-swarm-bookstack \
+      org.label-schema.vcs-url="https://github.com/Zeigren/docker-swarm-bookstack" \
       org.label-schema.vcs-type="Git" \
       org.label-schema.vcs-branch=$BRANCH \
       org.label-schema.version="$VERSION" \
@@ -40,8 +40,7 @@ RUN apk update \
     && rm ${BOOKSTACK}.tar.gz \
     && mv /usr/bin/wkhtmltopdf ${BOOKSTACK_HOME} \
     && cd $BOOKSTACK_HOME && composer install --no-dev \
-    && adduser -D -S -G www-data bookstack \
-    && chown -R bookstack:www-data $BOOKSTACK_HOME \
+    && chown -R www-data:www-data $BOOKSTACK_HOME \
     && apk del .build-deps \
     && rm -rf /root/.composer
 

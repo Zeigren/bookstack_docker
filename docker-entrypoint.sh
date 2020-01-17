@@ -124,18 +124,19 @@ EOF
 fi
 
 # Set PHP-FPM conf
-sed -i "s/user =.*/user = bookstack/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/group =.*/group = www-data/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm =.*/pm = ${FPM_PM:-ondemand}/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm.max_children =.*/pm.max_children = ${FPM_MAX_CHILDREN:-8}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm =.*/pm = ${FPM_PM:-dynamic}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.max_children =.*/pm.max_children = ${FPM_MAX_CHILDREN:-5}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.start_servers =.*/pm.start_servers = ${FPM_START_SERVERS:-2}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.min_spare_servers =.*/pm.min_spare_servers = ${FPM_MIN_SPARE:-1}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.max_spare_servers =.*/pm.max_spare_servers = ${FPM_MAX_SPARE:-3}/" /usr/local/etc/php-fpm.d/www.conf
 
-echoerr "wait-for-db: waiting for ${DB_HOST}"
+echo "Test connection to ${DB_HOST}"
 
-/wait-for.sh ${DB_HOST} -- echo 'success'
+/wait-for.sh ${DB_HOST} -- echo 'Success!'
 
-echo "wait a few seconds"
+echo "Give ${DB_HOST} a few seconds to warm up"
 
-sleep 10s
+sleep 5s
 
 composer install --no-dev
 
@@ -143,9 +144,35 @@ php artisan key:generate
 
 php artisan migrate --force
 
-echo "Setting folder permissions for uploads"
-chown -R bookstack:www-data public/uploads && chmod -R 775 public/uploads
-chown -R bookstack:www-data storage/uploads && chmod -R 775 storage/uploads
+if [[ $(stat -c '%u%g' ${BOOKSTACK_HOME}) != 8282 ]]; then
+echo "Setting BookStack permissions"
+chown -R www-data:www-data $BOOKSTACK_HOME
+fi
+
+if [[ $(stat -c '%u%g' public) != 8282 ]] ; then
+echo "Setting folder permissions for public"
+chown -R www-data:www-data public
+fi
+
+if [[ $(stat -c '%u%g' storage) != 8282 ]] ; then
+echo "Setting folder permissions for storage"
+chown -R www-data:www-data storage
+fi
+
+if [[ $(stat -c '%u%g%a' public/uploads) != 8282775 ]] ; then
+echo "Setting folder permissions for public/uploads"
+chown -R www-data:www-data public && chmod -R 775 public/uploads
+fi
+
+if [[ $(stat -c '%u%g%a' storage/uploads) != 8282775 ]] ; then
+echo "Setting folder permissions for storage/uploads"
+chown -R www-data:www-data storage && chmod -R 775 storage/uploads
+fi
+
+if [[ $(stat -c '%u%g%a' bootstrap/cache) != 8282775 ]] ; then
+echo "Setting folder permissions for bootstrap/cache"
+chown -R www-data:www-data bootstrap/cache && chmod -R 775 bootstrap/cache
+fi
 
 php artisan cache:clear
 
