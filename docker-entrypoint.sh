@@ -92,6 +92,10 @@ if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
       MAIL_FROM_NAME=${MAIL_FROM_NAME:-null}
 
       # URL used for social login redirects, NO TRAILING SLASH
+
+      # Allow <script> tags in page content
+      # Note, if set to 'true' the page editor may still escape scripts.
+      ALLOW_CONTENT_SCRIPTS=${ALLOW_CONTENT_SCRIPTS:-false}
 EOF
 
 sed -ie "s/single/errorlog/g" app/Config/app.php
