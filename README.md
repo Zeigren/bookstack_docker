@@ -8,6 +8,7 @@
 ## Tags
 
 - latest
+- 0.28.0
 - 0.27.5
 - 0.27.4
 - 0.26.2
@@ -17,7 +18,7 @@
 
 ## Stack
 
-- BookStack - PHP 7.4-fpm-alpine
+- PHP 7.4-fpm-alpine - BookStack
 - Nginx Alpine
 - MariaDB 10.4/latest
 - Redis Alpine
@@ -52,7 +53,7 @@ You'll also need to create this [Docker Config](https://docs.docker.com/engine/s
 
 - bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of `yourdomain`)
 
-Make whatever changes you need to docker-stack.yml (replace all instances of `yourdomain`).
+Make whatever changes you need to docker-stack.yml (replace all instances of `yourdomain`). All environment variables for BookStack can be found in `docker-entrypoint.sh`.
 
 Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
 

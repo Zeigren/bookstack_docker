@@ -7,17 +7,14 @@ ARG URL
 ARG VERSION
 
 LABEL org.label-schema.schema-version="1.0" \
-      org.label-schema.build-date=$DATE \
-      org.label-schema.docker.dockerfile="/Dockerfile" \
-      org.label-schema.name="bookstack" \
-      org.label-schema.vendor="zeigren" \
-      org.label-schema.url="https://hub.docker.com/r/zeigren/bookstack" \
-      org.label-schema.vcs-ref=$COMMIT \
-      org.label-schema.vcs-url="https://github.com/Zeigren/docker-swarm-bookstack" \
-      org.label-schema.vcs-type="Git" \
-      org.label-schema.vcs-branch=$BRANCH \
-      org.label-schema.version="$VERSION" \
-      org.label-schema.license="MIT"
+    org.label-schema.build-date=$DATE \
+    org.label-schema.vendor="Zeigren" \
+    org.label-schema.name="zeigren/bookstack" \
+    org.label-schema.url="https://hub.docker.com/r/zeigren/bookstack" \
+    org.label-schema.version=$VERSION \
+    org.label-schema.vcs-url=$URL \
+    org.label-schema.vcs-branch=$BRANCH \
+    org.label-schema.vcs-ref=$COMMIT
 
 ENV BOOKSTACK=BookStack \
     BOOKSTACK_HOME="/var/www/bookstack"

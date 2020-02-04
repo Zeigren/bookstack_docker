@@ -45,7 +45,6 @@ services:
     - mariadb
     environment:
 #   BookStack Settings
-    - APP_ENV=production
     - DB_HOST=mariadb:3306
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
@@ -53,33 +52,10 @@ services:
     - APP_URL=https://bookstack.yourdomain.com
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
-    - STORAGE_TYPE=local_secure
-#    - STORAGE_IMAGE_TYPE=
-#    - STORAGE_ATTACHMENT_TYPE=
+    - STORAGE_TYPE=local
+    - STORAGE_IMAGE_TYPE=local
+    - STORAGE_ATTACHMENT_TYPE=local_secure
     - REDIS_SERVERS=redis:6379:0
-#    - MEMCACHED_SERVERS=    
-#    - STORAGE_S3_KEY=
-#    - STORAGE_S3_SECRET=
-#    - STORAGE_S3_REGION=
-#    - STORAGE_S3_BUCKET=
-#    - STORAGE_URL=
-#    - STORAGE_S3_ENDPOINT=
-#   PHP.ini settings
-#    - post_max_size=0
-#    - upload_max_filesize=0
-#    - memory_limit=1028M
-#    - expose_php=off
-#    - cgifix_pathinfo=0
-#   Mail Settings
-#    - MAIL_DRIVER=
-#    - MAIL_HOST=
-#    - MAIL_PORT=
-#    - MAIL_USERNAME=
-#    - MAIL_PASSWORD=DOCKER-SECRET->mail_password
-#    - MAIL_ENCRYPTION=
-#   Mail sending options
-#    - MAIL_FROM=
-#    - MAIL_FROM_NAME=
     volumes:
     - bookstack_storage:/var/www/bookstack/storage
     - bookstack_public_storage:/var/www/bookstack/public/storage
@@ -89,7 +65,6 @@ services:
     - bookstack_db
     secrets:
       - bookstacksql_password
-      - mail_password
 
   redis:
     image: redis:alpine
@@ -112,8 +87,6 @@ secrets:
   yourdomain.com.key:
     external: true
   dhparam.pem:
-    external: true
-  mail_password:
     external: true
 
 networks:
