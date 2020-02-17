@@ -2,12 +2,14 @@
 [![](https://images.microbadger.com/badges/image/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 [![](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 [![](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+![Docker Pulls](https://img.shields.io/docker/pulls/zeigren/bookstack)
 
 ## Docker Stack For [BookStack](https://github.com/ssddanbrown/BookStack)
 
 ## Tags
 
 - latest
+- 0.28.2
 - 0.28.0
 - 0.27.5
 - 0.27.4
