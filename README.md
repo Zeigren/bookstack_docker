@@ -1,14 +1,15 @@
-[![](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/r/zeigren/bookstack)
-[![](https://images.microbadger.com/badges/image/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
-[![](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
-[![](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
-![Docker Pulls](https://img.shields.io/docker/pulls/zeigren/bookstack)
+# Docker Stack For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-## Docker Stack For [BookStack](https://github.com/ssddanbrown/BookStack)
+[![DockerHub](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/r/zeigren/bookstack)
+[![MicroBadger](https://images.microbadger.com/badges/image/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+[![MicroBadger](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+[![MicroBadger](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
+![Docker Pulls](https://img.shields.io/docker/pulls/zeigren/bookstack)
 
 ## Tags
 
 - latest
+- 0.28.3
 - 0.28.2
 - 0.28.0
 - 0.27.5
@@ -31,9 +32,9 @@
 
 ### [GitHub](https://github.com/Zeigren/docker-swarm-bookstack)
 
-### [Main Repository](https://projects.zeigren.com/diffusion/4/)
+### [Main Repository](https://phabricator.kairohm.dev/diffusion/4/)
 
-### [Project](https://projects.zeigren.com/project/view/36/)
+### [Project](https://phabricator.kairohm.dev/project/view/36/)
 
 ## Configuration
 
