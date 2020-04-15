@@ -4,11 +4,7 @@ source /env_secrets_expand.sh
 
 set -e
 
-echoerr() { echo "$@" 1>&2; }
-
-if [ ! -f "$BOOKSTACK_HOME/.env" ]; then
-  if [[ -n "${DB_HOST}" ]]; then
-  cat > "$BOOKSTACK_HOME/.env" <<EOF
+cat > "$BOOKSTACK_HOME/.env" <<EOF
 # Application environment
 # Can be 'production', 'development', 'testing' or 'demo'
 APP_ENV=${APP_ENV:-production}
@@ -20,7 +16,6 @@ APP_DEBUG=${APP_DEBUG:-false}
 
 # Application key
 # Used for encryption where needed.
-# Run `php artisan key:generate` to generate a valid key.
 APP_KEY=${APP_KEY:-SomeRandomStringWith32Characters}
 
 # Application URL
@@ -244,7 +239,10 @@ DISABLE_EXTERNAL_SERVICES=${DISABLE_EXTERNAL_SERVICES:-false}
 # Example: AVATAR_URL=https://seccdn.libravatar.org/avatar/${hash}?s=${size}&d=identicon
 AVATAR_URL=${AVATAR_URL:-}
 
-# Enable Draw.io integration
+# Enable draw.io integration
+# Can simply be true/false to enable/disable the integration.
+# Alternatively, It can be URL to the draw.io instance you want to use.
+# For URLs, The following URL parameters should be included: embed=1&proto=json&spin=1
 DRAWIO=${DRAWIO:-true}
 
 # Default item listing view
@@ -276,15 +274,8 @@ API_MAX_ITEM_COUNT=${API_MAX_ITEM_COUNT:-500}
 API_REQUESTS_PER_MIN=${API_REQUESTS_PER_MIN:-180}
 EOF
 
-sed -ie "s/single/errorlog/g" app/Config/app.php
-    else
-        echo >&2 'error: missing DB_HOST environment variable'
-        exit 1
-    fi
-fi
-
 if [ ! -f "/usr/local/etc/php/php.ini" ]; then
-  cat > "/usr/local/etc/php/php.ini" <<EOF
+cat > "/usr/local/etc/php/php.ini" <<EOF
 post_max_size = ${POST_MAX_SIZE:-0}
 upload_max_filesize = ${UPLOAD_MAX_FILESIZE:-0}
 memory_limit = ${MEMORY_LIMIT:-1028M}
@@ -294,7 +285,7 @@ EOF
 fi
 
 if [ ! -e "/usr/local/etc/php/conf.d/opcache.ini" ]; then
-  cat > "/usr/local/etc/php/conf.d/opcache.ini" <<EOF
+cat > "/usr/local/etc/php/conf.d/opcache.ini" <<EOF
 opcache.memory_consumption=${OPCACHE_MEMORY_CONSUMPTION:-64}
 opcache.max_accelerated_files=${OPCACHE_MAX_ACCELERATED_FILES:-4000}
 opcache.revalidate_freq=${OPCACHE_REVALIDATE_FREQ:-60}
@@ -319,9 +310,7 @@ echo "Give ${DB_HOST} a few seconds to warm up"
 
 sleep 5s
 
-composer install --no-dev
-
-php artisan key:generate
+php artisan key:generate --force
 
 php artisan migrate --force
 
