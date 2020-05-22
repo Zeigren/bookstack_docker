@@ -9,6 +9,7 @@
 ## Tags
 
 - latest
+- 0.29.3
 - 0.29.0
 - 0.28.3
 - 0.28.2
@@ -49,7 +50,6 @@ You'll need to create these [Docker Secrets](https://docs.docker.com/engine/swar
 
 - yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
 - yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
-- dhparam.pem = Diffie-Hellman parameter (you'll need to create/copy this)
 - bookstacksql_root_password = Root password for your SQL database
 - bookstacksql_password = BookStack user password for your SQL database
 

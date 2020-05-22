@@ -19,8 +19,6 @@ services:
         target: /etc/nginx/certs/yourdomain.com.crt
       - source: yourdomain.com.key
         target: /etc/nginx/certs/yourdomain.com.key
-      - source: dhparam.pem
-        target: /etc/nginx/dhparam/dhparam.pem
 
   mariadb:
     image: mariadb:latest
@@ -85,8 +83,6 @@ secrets:
   yourdomain.com.crt:
     external: true
   yourdomain.com.key:
-    external: true
-  dhparam.pem:
     external: true
 
 networks:

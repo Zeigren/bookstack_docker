@@ -16,8 +16,7 @@ LABEL org.label-schema.schema-version="1.0" \
     org.label-schema.vcs-branch=$BRANCH \
     org.label-schema.vcs-ref=$COMMIT
 
-ENV BOOKSTACK=BookStack \
-    BOOKSTACK_HOME="/var/www/bookstack"
+ENV BOOKSTACK_HOME="/var/www/bookstack"
 
 RUN apk update \
     && apk add --no-cache git zip unzip fontconfig ttf-freefont wkhtmltopdf \
@@ -31,10 +30,10 @@ RUN apk update \
     && cd /var/www && curl -sS https://getcomposer.org/installer | php \
     && mv /var/www/composer.phar /usr/local/bin/composer \
     && BOOKSTACK_VERSION=$( echo $VERSION | grep -Eo [0-9.]+ | head -1 ) \
-    && curl -L -o ${BOOKSTACK}.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz \
-    && tar -xf ${BOOKSTACK}.tar.gz \
+    && curl -L -o BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz \
+    && tar -xf BookStack.tar.gz \
     && mv BookStack-${BOOKSTACK_VERSION} ${BOOKSTACK_HOME} \
-    && rm ${BOOKSTACK}.tar.gz \
+    && rm BookStack.tar.gz \
     && mv /usr/bin/wkhtmltopdf ${BOOKSTACK_HOME} \
     && cd $BOOKSTACK_HOME && composer install --no-dev \
     && chown -R www-data:www-data $BOOKSTACK_HOME \

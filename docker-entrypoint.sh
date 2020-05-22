@@ -35,16 +35,12 @@ APP_AUTO_LANG_PUBLIC=${APP_AUTO_LANG_PUBLIC:-true}
 
 # Application timezone
 # Used where dates are displayed such as on exported content.
-# Valid timezone values can be found here: https://www.php.net/manual/en/timezones.php
 APP_TIMEZONE=${APP_TIMEZONE:-UTC}
 
 # Application theme
-# Used to specific a themes/<APP_THEME> folder where BookStack UI
-# overrides can be made. Defaults to disabled.
 APP_THEME=${APP_THEME:-false}
 
 # Database details
-# Host can contain a port (localhost:3306) or a separate DB_PORT option can be used.
 DB_HOST=${DB_HOST:-localhost}
 DB_PORT=${DB_PORT:-3306}
 DB_DATABASE=${DB_DATABASE:-bookstack}
@@ -132,7 +128,6 @@ AUTH_METHOD=${AUTH_METHOD:-standard}
 
 # Social authentication configuration
 # All disabled by default.
-# Refer to https://www.bookstackapp.com/docs/admin/third-party-auth/
 
 AZURE_APP_ID=${AZURE_APP_ID:-false}
 AZURE_APP_SECRET=${AZURE_APP_SECRET:-false}
@@ -189,7 +184,6 @@ TWITTER_AUTO_REGISTER=${TWITTER_AUTO_REGISTER:-false}
 TWITTER_AUTO_CONFIRM_EMAIL=${TWITTER_AUTO_CONFIRM_EMAIL:-false}
 
 # LDAP authentication configuration
-# Refer to https://www.bookstackapp.com/docs/admin/ldap-auth/
 LDAP_SERVER=${LDAP_SERVER:-false}
 LDAP_BASE_DN=${LDAP_BASE_DN:-false}
 LDAP_DN=${LDAP_DN:-false}
@@ -204,13 +198,11 @@ LDAP_FOLLOW_REFERRALS=${LDAP_FOLLOW_REFERRALS:-true}
 LDAP_DUMP_USER_DETAILS=${LDAP_DUMP_USER_DETAILS:-false}
 
 # LDAP group sync configuration
-# Refer to https://www.bookstackapp.com/docs/admin/ldap-auth/
 LDAP_USER_TO_GROUPS=${LDAP_USER_TO_GROUPS:-false}
 LDAP_GROUP_ATTRIBUTE=${LDAP_GROUP_ATTRIBUTE:-"memberOf"}
 LDAP_REMOVE_FROM_GROUPS=${LDAP_REMOVE_FROM_GROUPS:-false}
 
 # SAML authentication configuration
-# Refer to https://www.bookstackapp.com/docs/admin/saml2-auth/
 SAML2_NAME=${SAML2_NAME:-SSO}
 SAML2_EMAIL_ATTRIBUTE=${SAML2_EMAIL_ATTRIBUTE:-email}
 SAML2_DISPLAY_NAME_ATTRIBUTES=${SAML2_DISPLAY_NAME_ATTRIBUTES:-username}
@@ -224,7 +216,6 @@ SAML2_DUMP_USER_DETAILS=${SAML2_DUMP_USER_DETAILS:-false}
 SAML2_AUTOLOAD_METADATA=${SAML2_AUTOLOAD_METADATA:-false}
 
 # SAML group sync configuration
-# Refer to https://www.bookstackapp.com/docs/admin/saml2-auth/
 SAML2_USER_TO_GROUPS=${SAML2_USER_TO_GROUPS:-false}
 SAML2_GROUP_ATTRIBUTE=${SAML2_GROUP_ATTRIBUTE:-group}
 SAML2_REMOVE_FROM_GROUPS=${SAML2_REMOVE_FROM_GROUPS:-false}
@@ -236,13 +227,9 @@ DISABLE_EXTERNAL_SERVICES=${DISABLE_EXTERNAL_SERVICES:-false}
 # Use custom avatar service, Sets fetch URL
 # Possible placeholders: ${hash} ${size} ${email}
 # If set, Avatars will be fetched regardless of DISABLE_EXTERNAL_SERVICES option.
-# Example: AVATAR_URL=https://seccdn.libravatar.org/avatar/${hash}?s=${size}&d=identicon
 AVATAR_URL=${AVATAR_URL:-}
 
 # Enable draw.io integration
-# Can simply be true/false to enable/disable the integration.
-# Alternatively, It can be URL to the draw.io instance you want to use.
-# For URLs, The following URL parameters should be included: embed=1&proto=json&spin=1
 DRAWIO=${DRAWIO:-true}
 
 # Default item listing view
@@ -274,7 +261,6 @@ API_MAX_ITEM_COUNT=${API_MAX_ITEM_COUNT:-500}
 API_REQUESTS_PER_MIN=${API_REQUESTS_PER_MIN:-180}
 EOF
 
-if [ ! -f "/usr/local/etc/php/php.ini" ]; then
 cat > "/usr/local/etc/php/php.ini" <<EOF
 post_max_size = ${POST_MAX_SIZE:-0}
 upload_max_filesize = ${UPLOAD_MAX_FILESIZE:-0}
@@ -282,9 +268,7 @@ memory_limit = ${MEMORY_LIMIT:-1028M}
 expose_php = ${EXPOSE_PHP:-off}
 cgi.fix_pathinfo = ${CGIFIX_PATHINFO:-0}
 EOF
-fi
 
-if [ ! -e "/usr/local/etc/php/conf.d/opcache.ini" ]; then
 cat > "/usr/local/etc/php/conf.d/opcache.ini" <<EOF
 opcache.memory_consumption=${OPCACHE_MEMORY_CONSUMPTION:-64}
 opcache.max_accelerated_files=${OPCACHE_MAX_ACCELERATED_FILES:-4000}
@@ -293,7 +277,6 @@ opcache.fast_shutdown=${OPCACHE_FAST_SHUTDOWN:-1}
 opcache.enable_cli=${OPCACHE_ENABLE_CLI:-1}
 opcache.validate_timestamps=${OPCACHE_VALIDATE_TIMESTAMPS:-0}
 EOF
-fi
 
 # Set PHP-FPM conf
 sed -i "s/pm =.*/pm = ${FPM_PM:-dynamic}/" /usr/local/etc/php-fpm.d/www.conf
@@ -310,9 +293,12 @@ echo "Give ${DB_HOST} a few seconds to warm up"
 
 sleep 5s
 
-php artisan key:generate --force
-
-php artisan migrate --force
+export BOOKSTACK_VERSION="$(grep -Eo '[0-9.]+' ${BOOKSTACK_HOME}/version)"
+curl -L -o /var/www/BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz
+tar -C /var/www -xf /var/www/BookStack.tar.gz
+cp -rf /var/www/BookStack-${BOOKSTACK_VERSION}/public ${BOOKSTACK_HOME}
+rm /var/www/BookStack.tar.gz
+rm -rf /var/www/BookStack-${BOOKSTACK_VERSION}
 
 if [[ $(stat -c '%u%g' ${BOOKSTACK_HOME}) != 8282 ]]; then
 echo "Setting BookStack permissions"
@@ -343,6 +329,10 @@ if [[ $(stat -c '%u%g%a' bootstrap/cache) != 8282775 ]] ; then
 echo "Setting folder permissions for bootstrap/cache"
 chown -R www-data:www-data bootstrap/cache && chmod -R 775 bootstrap/cache
 fi
+
+php artisan key:generate --force
+
+php artisan migrate --force
 
 php artisan cache:clear
 
