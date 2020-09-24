@@ -4,6 +4,9 @@ services:
     image: nginx:alpine
     volumes:
       - bookstack_public:/var/www/bookstack/public
+      - ./config/bookstack_vhost.conf:/etc/nginx/conf.d/default.conf
+      - ./config/yourdomain.com.crt:/etc/nginx/certs/yourdomain.com.crt
+      - ./config/yourdomain.com.key:/etc/nginx/certs/yourdomain.com.key
     depends_on:
       - bookstack
     networks:
@@ -11,29 +14,18 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    configs:
-      - source: bookstack_vhost
-        target: /etc/nginx/conf.d/default.conf
-    secrets:
-      - source: yourdomain.com.crt
-        target: /etc/nginx/certs/yourdomain.com.crt
-      - source: yourdomain.com.key
-        target: /etc/nginx/certs/yourdomain.com.key
 
   mariadb:
     image: mariadb:latest
     volumes:
       - bookstack_db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/bookstacksql_root_password
+      - MYSQL_ROOT_PASSWORD=CHANGEME
       - MYSQL_DATABASE=bookstack
       - MYSQL_USER=bookstack
-      - MYSQL_PASSWORD_FILE=/run/secrets/bookstacksql_password
+      - MYSQL_PASSWORD=CHANGEME
 # work around for https://github.com/docker-library/mariadb/issues/262
       - MYSQL_INITDB_SKIP_TZINFO=1
-    secrets:
-      - bookstacksql_root_password
-      - bookstacksql_password
     networks:
       - bookstack_db
 
@@ -46,7 +38,7 @@ services:
     - DB_HOST=mariadb:3306
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
-    - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
+    - DB_PASSWORD=CHANGEME
     - APP_URL=https://bookstack.yourdomain.com
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
@@ -58,8 +50,6 @@ services:
     networks:
     - bookstack
     - bookstack_db
-    secrets:
-      - bookstacksql_password
 
   redis:
     image: redis:alpine
@@ -72,20 +62,6 @@ volumes:
   bookstack_public_storage:
   bookstack_public:
 
-secrets:
-  bookstacksql_root_password:
-    external: true
-  bookstacksql_password:
-    external: true
-  yourdomain.com.crt:
-    external: true
-  yourdomain.com.key:
-    external: true
-
 networks:
   bookstack:
   bookstack_db:
-
-configs:
-  bookstack_vhost:
-    external: true

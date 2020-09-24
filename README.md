@@ -38,11 +38,19 @@
 
 ### [Project](https://phabricator.kairohm.dev/project/view/36/)
 
+## Usage
+
+Use [Docker Compose](https://docs.docker.com/compose/) or [Docker Swarm](https://docs.docker.com/engine/swarm/) to deploy BookStack.
+
+Clone the repository and create a `config` folder inside the directory.
+
+I like using [Portainer](https://www.portainer.io/) since it makes all the tinkering easier, but it's not necessary.
+
 ## Configuration
 
-This is designed to be run under [Docker Swarm](https://docs.docker.com/engine/swarm/) mode, don't know why you can't use secrets with just compose but it is what it is.
+Configuration consists of environment variables in the `docker-compose.yml` and `docker-stack.yml` files or as files contained in the `config` folder.
 
-I like using [Portainer](https://www.portainer.io/) since it makes all the swarm configuration and tinkering easier, but it's not necessary.
+### [Docker Swarm](https://docs.docker.com/engine/swarm/)
 
 I personally use this with [Traefik](https://traefik.io/) as a reverse proxy, but also not necessary.
 
@@ -62,6 +70,24 @@ Make whatever changes you need to docker-stack.yml (replace all instances of `yo
 Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
 
 Once it's started you can login with username `admin@admin.com` and password `password`.
+
+### [Docker Compose](https://docs.docker.com/compose/)
+
+You'll need to create/modify these files and put them in the `config` folder:
+
+- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of `yourdomain`)
+- yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
+- yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
+
+Make whatever changes you need to `docker-compose.yml` (replace all instances of `yourdomain`, change passwords). All environment variables for BookStack can be found in `docker-entrypoint.sh`.
+
+Run with `docker-compose up -d`
+
+Once it's started you can login with username `admin@admin.com` and password `password`.
+
+#### Test
+
+For a quick test you can copy `test_vhost.conf` into the `config` folder and run `docker-compose -f test.yml up -d`, then open up a web browser to `127.0.0.1:9080`.
 
 ## Issues
 
