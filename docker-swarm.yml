@@ -9,16 +9,19 @@ services:
     networks:
       - bookstack
     ports:
-      - "80:80"
-      - "443:443"
+      # CHANGE TO "80:80" IF USING NGINX FOR SSL TERMINATION
+      - "9080:80"
+      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+      # - "443:443"
     configs:
       - source: bookstack_vhost
         target: /etc/nginx/conf.d/default.conf
-    secrets:
-      - source: yourdomain.com.crt
-        target: /etc/nginx/certs/yourdomain.com.crt
-      - source: yourdomain.com.key
-        target: /etc/nginx/certs/yourdomain.com.key
+    # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+    # secrets:
+    #   - source: yourdomain.com.crt
+    #     target: /etc/nginx/certs/yourdomain.com.crt
+    #   - source: yourdomain.com.key
+    #     target: /etc/nginx/certs/yourdomain.com.key
 
   mariadb:
     image: mariadb:latest
@@ -47,7 +50,7 @@ services:
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
-    - APP_URL=https://bookstack.yourdomain.com
+    - APP_URL=null
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - REDIS_SERVERS=redis:6379:0
@@ -77,10 +80,11 @@ secrets:
     external: true
   bookstacksql_password:
     external: true
-  yourdomain.com.crt:
-    external: true
-  yourdomain.com.key:
-    external: true
+  # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+  # yourdomain.com.crt:
+  #   external: true
+  # yourdomain.com.key:
+  #   external: true
 
 networks:
   bookstack:

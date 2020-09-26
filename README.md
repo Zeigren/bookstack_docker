@@ -9,6 +9,7 @@
 ## Tags
 
 - latest
+- 0.30.0
 - 0.29.3
 - 0.29.0
 - 0.28.3
@@ -24,8 +25,8 @@
 ## Stack
 
 - PHP 7.4-fpm-alpine - BookStack
-- Nginx Alpine
-- MariaDB 10.4/latest
+- NGINX Alpine
+- MariaDB
 - Redis Alpine
 
 ## Links
@@ -40,54 +41,35 @@
 
 ## Usage
 
-Use [Docker Compose](https://docs.docker.com/compose/) or [Docker Swarm](https://docs.docker.com/engine/swarm/) to deploy BookStack.
-
-Clone the repository and create a `config` folder inside the directory.
-
-I like using [Portainer](https://www.portainer.io/) since it makes all the tinkering easier, but it's not necessary.
+Use [Docker Compose](https://docs.docker.com/compose/) or [Docker Swarm](https://docs.docker.com/engine/swarm/) to deploy BookStack. Supports using either NGINX or Traefik for SSL termination, or don't use SSL at all.
 
 ## Configuration
 
-Configuration consists of environment variables in the `docker-compose.yml` and `docker-stack.yml` files or as files contained in the `config` folder.
+Configuration consists of environment variables in the `.yml` and `.conf` files.
+
+- bookstack_vhost = The NGINX vhost file for BookStack (templates included, use `bookstack_vhost_ssl` if you're using NGINX for SSL termination)
+- Make whatever changes you need to the appropriate `.yml`. All environment variables for BookStack can be found in `docker-entrypoint.sh`
+
+### Using NGINX for SSL Termination
+
+- yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
+- yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
 
 ### [Docker Swarm](https://docs.docker.com/engine/swarm/)
 
-I personally use this with [Traefik](https://traefik.io/) as a reverse proxy, but also not necessary.
+I personally use this with [Traefik](https://traefik.io/) as a reverse proxy, I've included an example `traefik.yml` but it's not necessary.
 
-You'll need to create these [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/):
+You'll need to create the appropriate [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/) and [Docker Configs](https://docs.docker.com/engine/swarm/configs/).
 
-- yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
-- yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
-- bookstacksql_root_password = Root password for your SQL database
-- bookstacksql_password = BookStack user password for your SQL database
-
-You'll also need to create this [Docker Config](https://docs.docker.com/engine/swarm/configs/):
-
-- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of `yourdomain`)
-
-Make whatever changes you need to docker-stack.yml (replace all instances of `yourdomain`). All environment variables for BookStack can be found in `docker-entrypoint.sh`.
-
-Run with `docker stack deploy --compose-file docker-stack.yml bookstack`
-
-Once it's started you can login with username `admin@admin.com` and password `password`.
+Run with `docker stack deploy --compose-file docker-swarm.yml bookstack`
 
 ### [Docker Compose](https://docs.docker.com/compose/)
 
-You'll need to create/modify these files and put them in the `config` folder:
+You'll need to create a `config` folder and put the relevant configuration files you created/modified into it.
 
-- bookstack_vhost = The nginx vhost file for BookStack (template included, simply replace all instances of `yourdomain`)
-- yourdomain.com.crt = The SSL certificate for your domain (you'll need to create/copy this)
-- yourdomain.com.key = The SSL key for your domain (you'll need to create/copy this)
-
-Make whatever changes you need to `docker-compose.yml` (replace all instances of `yourdomain`, change passwords). All environment variables for BookStack can be found in `docker-entrypoint.sh`.
-
-Run with `docker-compose up -d`
+Run with `docker-compose up -d`. View using `127.0.0.1:9080`.
 
 Once it's started you can login with username `admin@admin.com` and password `password`.
-
-#### Test
-
-For a quick test you can copy `test_vhost.conf` into the `config` folder and run `docker-compose -f test.yml up -d`, then open up a web browser to `127.0.0.1:9080`.
 
 ## Issues
 

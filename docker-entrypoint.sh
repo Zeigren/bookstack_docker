@@ -230,6 +230,9 @@ DISABLE_EXTERNAL_SERVICES=${DISABLE_EXTERNAL_SERVICES:-false}
 AVATAR_URL=${AVATAR_URL:-}
 
 # Enable draw.io integration
+# Can simply be true/false to enable/disable the integration.
+# Alternatively, It can be URL to the draw.io instance you want to use.
+# For URLs, The following URL parameters should be included: embed=1&proto=json&spin=1
 DRAWIO=${DRAWIO:-true}
 
 # Default item listing view
@@ -259,6 +262,14 @@ API_MAX_ITEM_COUNT=${API_MAX_ITEM_COUNT:-500}
 
 # The number of API requests that can be made per minute by a single user.
 API_REQUESTS_PER_MIN=${API_REQUESTS_PER_MIN:-180}
+
+# Enable the logging of failed email+password logins with the given message.
+# The default log channel below uses the php 'error_log' function which commonly
+# results in messages being output to the webserver error logs.
+# The message can contain a %u parameter which will be replaced with the login
+# user identifier (Username or email).
+LOG_FAILED_LOGIN_MESSAGE=${LOG_FAILED_LOGIN_MESSAGE:-false}
+LOG_FAILED_LOGIN_CHANNEL=${LOG_FAILED_LOGIN_CHANNEL:-errorlog_plain_webserver}
 EOF
 
 cat > "/usr/local/etc/php/php.ini" <<EOF

@@ -4,16 +4,19 @@ services:
     image: nginx:alpine
     volumes:
       - bookstack_public:/var/www/bookstack/public
-      - ./config/bookstack_vhost.conf:/etc/nginx/conf.d/default.conf
-      - ./config/yourdomain.com.crt:/etc/nginx/certs/yourdomain.com.crt
-      - ./config/yourdomain.com.key:/etc/nginx/certs/yourdomain.com.key
+      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+      # - ./config/bookstack_vhost.conf:/etc/nginx/conf.d/default.conf
+      # - ./config/yourdomain.com.crt:/etc/nginx/certs/yourdomain.com.crt
+      # - ./config/yourdomain.com.key:/etc/nginx/certs/yourdomain.com.key
     depends_on:
       - bookstack
     networks:
       - bookstack
     ports:
-      - "80:80"
-      - "443:443"
+      # CHANGE TO "80:80" IF USING NGINX FOR SSL TERMINATION
+      - "9080:80"
+      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+      # - "443:443"
 
   mariadb:
     image: mariadb:latest
@@ -39,7 +42,7 @@ services:
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=CHANGEME
-    - APP_URL=https://bookstack.yourdomain.com
+    - APP_URL=null
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - REDIS_SERVERS=redis:6379:0
