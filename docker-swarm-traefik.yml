@@ -17,10 +17,10 @@ services:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik"
         - "traefik.http.routers.bookstack-http.entrypoints=web"
-        - "traefik.http.routers.bookstack-http.rule=Host(`bookstack.yourdomain.com`)"
+        - "traefik.http.routers.bookstack-http.rule=Host(`bookstack.yourdomain.test`)"
         - "traefik.http.routers.bookstack-http.middlewares=bookstack-https@docker"
         - "traefik.http.routers.bookstack.entrypoints=websecure"
-        - "traefik.http.routers.bookstack.rule=Host(`bookstack.yourdomain.com`)"
+        - "traefik.http.routers.bookstack.rule=Host(`bookstack.yourdomain.test`)"
         - "traefik.http.routers.bookstack.tls=true"
         - "traefik.http.routers.bookstack.tls.certresolver=myresolver"
         - "traefik.http.services.bookstack.loadbalancer.server.port=80"
@@ -30,7 +30,7 @@ services:
         - "traefik.http.middlewares.bookstack.headers.stsseconds=315360000"
         - "traefik.http.services.bookstack.loadbalancer.passhostheader=true"
         - "traefik.http.middlewares.bookstack.headers.sslforcehost=true"
-        - "traefik.http.middlewares.bookstack.headers.sslhost=bookstack.yourdomain.com"
+        - "traefik.http.middlewares.bookstack.headers.sslhost=bookstack.yourdomain.test"
         - "traefik.http.middlewares.bookstack.headers.browserxssfilter=true"
         - "traefik.http.middlewares.bookstack.headers.contenttypenosniff=true"
         - "traefik.http.middlewares.bookstack.headers.forcestsheader=true"
@@ -62,7 +62,7 @@ services:
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
-    - APP_URL=https://bookstack.yourdomain.com
+    - APP_URL=https://bookstack.yourdomain.test
     - CACHE_DRIVER=redis
     - SESSION_DRIVER=redis
     - STORAGE_TYPE=local

@@ -20,13 +20,13 @@ ENV BOOKSTACK_HOME="/var/www/bookstack"
 
 RUN apk update \
     && apk add --no-cache git zip unzip fontconfig ttf-freefont wkhtmltopdf \
-    tidyhtml-dev openldap-dev \
+    openldap-dev \
     && apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS libpng-dev freetype-dev libjpeg-turbo-dev \
     && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-configure ldap \
     && docker-php-ext-configure opcache --enable-opcache \
-    && docker-php-ext-install pdo_mysql tidy gd ldap opcache \
+    && docker-php-ext-install pdo_mysql gd ldap opcache \
     && cd /var/www && curl -sS https://getcomposer.org/installer | php \
     && mv /var/www/composer.phar /usr/local/bin/composer \
     && BOOKSTACK_VERSION=$( echo $VERSION | grep -Eo [0-9.]+ | head -1 ) \

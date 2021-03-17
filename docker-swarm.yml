@@ -18,10 +18,10 @@ services:
         target: /etc/nginx/conf.d/default.conf
     # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
     # secrets:
-    #   - source: yourdomain.com.crt
-    #     target: /etc/nginx/certs/yourdomain.com.crt
-    #   - source: yourdomain.com.key
-    #     target: /etc/nginx/certs/yourdomain.com.key
+    #   - source: yourdomain.test.crt
+    #     target: /etc/nginx/certs/yourdomain.test.crt
+    #   - source: yourdomain.test.key
+    #     target: /etc/nginx/certs/yourdomain.test.key
 
   mariadb:
     image: mariadb:latest
@@ -81,9 +81,9 @@ secrets:
   bookstacksql_password:
     external: true
   # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
-  # yourdomain.com.crt:
+  # yourdomain.test.crt:
   #   external: true
-  # yourdomain.com.key:
+  # yourdomain.test.key:
   #   external: true
 
 networks:

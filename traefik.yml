@@ -11,14 +11,15 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesResolvers.myresolver.acme.httpChallenge.entryPoint=web"
-      - "--certificatesResolvers.myresolver.acme.email=EMAIL@CHANGEME.COM"
+      - "--certificatesResolvers.myresolver.acme.email=EMAIL@CHANGEME.TEST"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik:/etc/traefik/acme
+      - traefik:/letsencrypt
     networks:
       - traefik
 

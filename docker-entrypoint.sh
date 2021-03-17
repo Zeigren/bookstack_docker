@@ -190,6 +190,7 @@ LDAP_DN=${LDAP_DN:-false}
 LDAP_PASS=${LDAP_PASS:-false}
 LDAP_USER_FILTER=${LDAP_USER_FILTER:-false}
 LDAP_VERSION=${LDAP_VERSION:-false}
+LDAP_START_TLS=${LDAP_START_TLS:-false}
 LDAP_TLS_INSECURE=${LDAP_TLS_INSECURE:-false}
 LDAP_ID_ATTRIBUTE=${LDAP_ID_ATTRIBUTE:-uid}
 LDAP_EMAIL_ATTRIBUTE=${LDAP_EMAIL_ATTRIBUTE:-mail}
@@ -229,9 +230,9 @@ DISABLE_EXTERNAL_SERVICES=${DISABLE_EXTERNAL_SERVICES:-false}
 # If set, Avatars will be fetched regardless of DISABLE_EXTERNAL_SERVICES option.
 AVATAR_URL=${AVATAR_URL:-}
 
-# Enable draw.io integration
+# Enable diagrams.net integration
 # Can simply be true/false to enable/disable the integration.
-# Alternatively, It can be URL to the draw.io instance you want to use.
+# Alternatively, It can be URL to the diagrams.net instance you want to use.
 # For URLs, The following URL parameters should be included: embed=1&proto=json&spin=1
 DRAWIO=${DRAWIO:-true}
 
@@ -240,11 +241,24 @@ DRAWIO=${DRAWIO:-true}
 # Can be 'list' or 'grid'
 APP_VIEWS_BOOKS=${APP_VIEWS_BOOKS:-list}
 APP_VIEWS_BOOKSHELVES=${APP_VIEWS_BOOKSHELVES:-grid}
+APP_VIEWS_BOOKSHELF=${APP_VIEWS_BOOKSHELF:-grid}
+
+# Use dark mode by default
+# Will be overriden by any user/session preference.
+APP_DEFAULT_DARK_MODE=${APP_DEFAULT_DARK_MODE:-false}
 
 # Page revision limit
 # Number of page revisions to keep in the system before deleting old revisions.
 # If set to 'false' a limit will not be enforced.
 REVISION_LIMIT=${REVISION_LIMIT:-50}
+
+# Recycle Bin Lifetime
+# The number of days that content will remain in the recycle bin before
+# being considered for auto-removal. It is not a guarantee that content will
+# be removed after this time.
+# Set to 0 for no recycle bin functionality.
+# Set to -1 for unlimited recycle bin lifetime.
+RECYCLE_BIN_LIFETIME=${RECYCLE_BIN_LIFETIME:-30}
 
 # Allow <script> tags in page content
 # Note, if set to 'true' the page editor may still escape scripts.
@@ -255,6 +269,12 @@ ALLOW_CONTENT_SCRIPTS=${ALLOW_CONTENT_SCRIPTS:-false}
 # The behaviour of the default 'null' option will depend on the 'app-public' admin setting.
 # Contents of the robots.txt file can be overridden, making this option obsolete.
 ALLOW_ROBOTS=${ALLOW_ROBOTS:-null}
+
+# A list of hosts that BookStack can be iframed within.
+# Space separated if multiple. BookStack host domain is auto-inferred.
+# For Example: ALLOWED_IFRAME_HOSTS="https://example.com https://a.example.com"
+# Setting this option will also auto-adjust cookies to be SameSite=None.
+ALLOWED_IFRAME_HOSTS=${ALLOWED_IFRAME_HOSTS:-null}
 
 # The default and maximum item-counts for listing API requests.
 API_DEFAULT_ITEM_COUNT=${API_DEFAULT_ITEM_COUNT:-100}
