@@ -1,14 +1,13 @@
 # Docker Stack For [BookStack](https://github.com/BookStackApp/BookStack)
 
-[![DockerHub](https://img.shields.io/docker/cloud/build/zeigren/bookstack)](https://hub.docker.com/r/zeigren/bookstack)
+![DockerHub Build Status](https://img.shields.io/docker/cloud/build/zeigren/bookstack)
 ![Docker Image Size (latest)](https://img.shields.io/docker/image-size/zeigren/bookstack/latest)
-[![MicroBadger](https://images.microbadger.com/badges/version/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
-[![MicroBadger](https://images.microbadger.com/badges/commit/zeigren/bookstack.svg)](https://microbadger.com/images/zeigren/bookstack)
 ![Docker Pulls](https://img.shields.io/docker/pulls/zeigren/bookstack)
 
 ## Tags
 
 - latest
+- 21.04.2
 - 0.31.8
 - 0.30.1
 - 0.30.0

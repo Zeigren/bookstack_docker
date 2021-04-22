@@ -48,7 +48,7 @@ DB_USERNAME=${DB_USERNAME:-bookstack}
 DB_PASSWORD=${DB_PASSWORD:-password}
 
 # Mail system to use
-# Can be 'smtp', 'mail' or 'sendmail'
+# Can be 'smtp' or 'sendmail'
 MAIL_DRIVER=${MAIL_DRIVER:-smtp}
 
 # Mail sending options
@@ -70,6 +70,7 @@ SESSION_DRIVER=${SESSION_DRIVER:-file}
 # Session configuration
 SESSION_LIFETIME=${SESSION_LIFETIME:-120}
 SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME:-bookstack_session}
+SESSION_COOKIE_PATH=${SESSION_COOKIE_PATH:-/}
 SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-false}
 
 # Cache key prefix
