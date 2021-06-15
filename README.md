@@ -6,6 +6,7 @@
 ## Tags
 
 - latest
+- 21.05.2
 - 21.05.1
 - 21.04.2
 - 0.31.8
@@ -66,7 +67,7 @@ Run with `docker stack deploy --compose-file docker-swarm.yml bookstack`
 
 ### [Docker Compose](https://docs.docker.com/compose/)
 
-You'll need to create a `config` folder and put the `bookstack_nginx.conf`, your SSL certificate, and SSL key in it.
+You'll need to create a `config` folder and put `bookstack_nginx.conf` in it, if you're using NGINX for SSL also put your SSL certificate and SSL key in it.
 
 Run with `docker-compose up -d`. View using `127.0.0.1:9080`.
 
