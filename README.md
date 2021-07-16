@@ -6,6 +6,7 @@
 ## Tags
 
 - latest
+- 21.05.3
 - 21.05.2
 - 21.05.1
 - 21.04.2
@@ -35,7 +36,9 @@
 
 ### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
 
-### [GitHub](https://github.com/Zeigren/docker-swarm-bookstack)
+### [GitHub](https://github.com/Zeigren/bookstack_docker)
+
+### [ghcr.io](https://ghcr.io/zeigren/bookstack_docker)
 
 ### [Main Repository](https://phabricator.kairohm.dev/diffusion/4/)
 

@@ -49,7 +49,7 @@ services:
       - bookstack_db
 
   bookstack:
-    image: zeigren/bookstack:latest
+    image: zeigren/bookstack:latest # ghcr.io/zeigren/bookstack_docker:latest
     # https://hub.docker.com/r/zeigren/bookstack
     environment:
       - DB_HOST=mariadb:3306
