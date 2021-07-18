@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:8.0-fpm-alpine
 
 ARG DATE
 ARG VERSION
@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.created=$DATE \
 ENV BOOKSTACK_HOME="/var/www/bookstack"
 
 RUN apk update \
-    && apk add --no-cache git zip unzip fontconfig ttf-freefont wkhtmltopdf \
+    && apk add --no-cache zip unzip fontconfig ttf-freefont wkhtmltopdf \
     openldap-dev \
     && apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS libpng-dev freetype-dev libjpeg-turbo-dev \
@@ -23,10 +23,9 @@ RUN apk update \
     && docker-php-ext-install pdo_mysql gd ldap opcache \
     && cd /var/www && curl -sS https://getcomposer.org/installer | php \
     && mv /var/www/composer.phar /usr/local/bin/composer \
-    && BOOKSTACK_VERSION=$( echo $VERSION | grep -Eo [0-9.]+ | head -1 ) \
-    && curl -L -o BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz \
-    && tar -xf BookStack.tar.gz \
-    && mv BookStack-${BOOKSTACK_VERSION} ${BOOKSTACK_HOME} \
+    && curl -sSL -o BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v$VERSION.tar.gz \
+    && mkdir -p ${BOOKSTACK_HOME} \
+    && tar --strip-components=1 -C ${BOOKSTACK_HOME} -xf BookStack.tar.gz \
     && rm BookStack.tar.gz \
     && mv /usr/bin/wkhtmltopdf ${BOOKSTACK_HOME} \
     && cd $BOOKSTACK_HOME && composer install --no-dev \

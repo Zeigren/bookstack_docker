@@ -4,7 +4,12 @@ source /env_secrets_expand.sh
 
 set -e
 
-cat > "$BOOKSTACK_HOME/.env" <<EOF
+# BookStack Configuration
+# https://www.bookstackapp.com/docs/
+# https://github.com/BookStackApp/BookStack/blob/master/.env.example.complete
+# -------------------------------------------------------------------------------
+
+cat >"$BOOKSTACK_HOME/.env" <<EOF
 # Application environment
 # Can be 'production', 'development', 'testing' or 'demo'
 APP_ENV=${APP_ENV:-production}
@@ -295,29 +300,32 @@ LOG_FAILED_LOGIN_MESSAGE=${LOG_FAILED_LOGIN_MESSAGE:-false}
 LOG_FAILED_LOGIN_CHANNEL=${LOG_FAILED_LOGIN_CHANNEL:-errorlog_plain_webserver}
 EOF
 
-cat > "/usr/local/etc/php/php.ini" <<EOF
+# PHP Configuration
+# -------------------------------------------------------------------------------
+
+# https://github.com/php/php-src/blob/master/php.ini-production
+# https://www.php.net/manual/en/ini.list.php
+cat >"/usr/local/etc/php/php.ini" <<EOF
 post_max_size = ${POST_MAX_SIZE:-0}
 upload_max_filesize = ${UPLOAD_MAX_FILESIZE:-0}
-memory_limit = ${MEMORY_LIMIT:-1028M}
+memory_limit = ${MEMORY_LIMIT:-1024M}
 expose_php = ${EXPOSE_PHP:-off}
-cgi.fix_pathinfo = ${CGIFIX_PATHINFO:-0}
-EOF
-
-cat > "/usr/local/etc/php/conf.d/opcache.ini" <<EOF
-opcache.memory_consumption=${OPCACHE_MEMORY_CONSUMPTION:-64}
-opcache.max_accelerated_files=${OPCACHE_MAX_ACCELERATED_FILES:-4000}
-opcache.revalidate_freq=${OPCACHE_REVALIDATE_FREQ:-60}
-opcache.fast_shutdown=${OPCACHE_FAST_SHUTDOWN:-1}
+opcache.memory_consumption=${OPCACHE_MEMORY_CONSUMPTION:-128}
+opcache.max_accelerated_files=${OPCACHE_MAX_ACCELERATED_FILES:-10000}
 opcache.enable_cli=${OPCACHE_ENABLE_CLI:-1}
 opcache.validate_timestamps=${OPCACHE_VALIDATE_TIMESTAMPS:-0}
 EOF
 
-# Set PHP-FPM conf
-sed -i "s/pm =.*/pm = ${FPM_PM:-dynamic}/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm.max_children =.*/pm.max_children = ${FPM_MAX_CHILDREN:-5}/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm.start_servers =.*/pm.start_servers = ${FPM_START_SERVERS:-2}/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm.min_spare_servers =.*/pm.min_spare_servers = ${FPM_MIN_SPARE:-1}/" /usr/local/etc/php-fpm.d/www.conf
-sed -i "s/pm.max_spare_servers =.*/pm.max_spare_servers = ${FPM_MAX_SPARE:-3}/" /usr/local/etc/php-fpm.d/www.conf
+# https://www.php.net/manual/en/install.fpm.configuration.php
+sed -i "s/pm =.*/pm = ${FPM_PM:-ondemand}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.max_children =.*/pm.max_children = ${FPM_MAX_CHILDREN:-10}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.start_servers =.*/pm.start_servers = ${FPM_START_SERVERS:-3}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.min_spare_servers =.*/pm.min_spare_servers = ${FPM_MIN_SPARE_SERVERS:-1}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/pm.max_spare_servers =.*/pm.max_spare_servers = ${FPM_MAX_SPARE_SERVERS:-2}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/;pm.max_requests =.*/pm.max_requests = ${FPM_MAX_REQUESTS:-500}/" /usr/local/etc/php-fpm.d/www.conf
+sed -i "s/;pm.process_idle_timeout =.*/pm.process_idle_timeout = ${FPM_PROCESS_IDLE_TIMEOUT:-10s}/" /usr/local/etc/php-fpm.d/www.conf
+
+# -------------------------------------------------------------------------------
 
 echo "Test connection to ${DB_HOST}"
 
@@ -328,40 +336,41 @@ echo "Give ${DB_HOST} a few seconds to warm up"
 sleep 5s
 
 export BOOKSTACK_VERSION="$(grep -Eo '[0-9.]+' ${BOOKSTACK_HOME}/version)"
-curl -L -o /var/www/BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz
-tar -C /var/www -xf /var/www/BookStack.tar.gz
-cp -rf /var/www/BookStack-${BOOKSTACK_VERSION}/public ${BOOKSTACK_HOME}
+mkdir -p /var/www/tmp
+curl -sSL -o /var/www/BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz
+tar --strip-components=1 -C /var/www/tmp -xf /var/www/BookStack.tar.gz
+cp -rf /var/www/tmp/public ${BOOKSTACK_HOME}
 rm /var/www/BookStack.tar.gz
-rm -rf /var/www/BookStack-${BOOKSTACK_VERSION}
+rm -rf /var/www/tmp
 
 if [[ $(stat -c '%u%g' ${BOOKSTACK_HOME}) != 8282 ]]; then
-echo "Setting BookStack permissions"
-chown -R www-data:www-data $BOOKSTACK_HOME
+  echo "Setting BookStack permissions"
+  chown -R www-data:www-data $BOOKSTACK_HOME
 fi
 
-if [[ $(stat -c '%u%g' public) != 8282 ]] ; then
-echo "Setting folder permissions for public"
-chown -R www-data:www-data public
+if [[ $(stat -c '%u%g' public) != 8282 ]]; then
+  echo "Setting folder permissions for public"
+  chown -R www-data:www-data public
 fi
 
-if [[ $(stat -c '%u%g' storage) != 8282 ]] ; then
-echo "Setting folder permissions for storage"
-chown -R www-data:www-data storage
+if [[ $(stat -c '%u%g' storage) != 8282 ]]; then
+  echo "Setting folder permissions for storage"
+  chown -R www-data:www-data storage
 fi
 
-if [[ $(stat -c '%u%g%a' public/uploads) != 8282775 ]] ; then
-echo "Setting folder permissions for public/uploads"
-chown -R www-data:www-data public && chmod -R 775 public/uploads
+if [[ $(stat -c '%u%g%a' public/uploads) != 8282775 ]]; then
+  echo "Setting folder permissions for public/uploads"
+  chown -R www-data:www-data public && chmod -R 775 public/uploads
 fi
 
-if [[ $(stat -c '%u%g%a' storage/uploads) != 8282775 ]] ; then
-echo "Setting folder permissions for storage/uploads"
-chown -R www-data:www-data storage && chmod -R 775 storage/uploads
+if [[ $(stat -c '%u%g%a' storage/uploads) != 8282775 ]]; then
+  echo "Setting folder permissions for storage/uploads"
+  chown -R www-data:www-data storage && chmod -R 775 storage/uploads
 fi
 
-if [[ $(stat -c '%u%g%a' bootstrap/cache) != 8282775 ]] ; then
-echo "Setting folder permissions for bootstrap/cache"
-chown -R www-data:www-data bootstrap/cache && chmod -R 775 bootstrap/cache
+if [[ $(stat -c '%u%g%a' bootstrap/cache) != 8282775 ]]; then
+  echo "Setting folder permissions for bootstrap/cache"
+  chown -R www-data:www-data bootstrap/cache && chmod -R 775 bootstrap/cache
 fi
 
 php artisan key:generate --force

@@ -1,0 +1,45 @@
+# https://caddyserver.com/docs/caddyfile
+# https://caddyserver.com/docs/caddyfile/options#global-options
+{
+	http_port {$HTTP_PORT:80}
+	https_port {$HTTPS_PORT:443}
+	ocsp_stapling {$OCSP_STAPLING:off}
+}
+
+{$DOMAIN:localhost} {
+	# https://caddyserver.com/docs/caddyfile/directives/root
+	root * /var/www/bookstack/public
+	# https://caddyserver.com/docs/caddyfile/directives/header
+	# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+	header /upload/* Cache-Control {$CACHE_UPLOAD:"no-cache, public, must-revalidate, proxy-revalidate, max-age=315360000"}
+	# Following headers are only set if they don't exist
+	@cachedFiles {
+		path *.aac *.avi *.css *.eot *.flv *.gif *.heic *.ico *.jpeg *.jpg *.js *.m4a *.map *.mid *.midi *.mov *.mp3 *.mp4 *.mpeg *.mpg *.ogg *.ogv *.otf *.png *.svg *.svgz *.tif *.tiff *.ttc *.ttf *.wav *.webm *.webp *.wmv *.woff *.woff2
+	}
+	header @cachedFiles ?Cache-Control {$CACHE_FILES:"no-cache, public, must-revalidate, proxy-revalidate, max-age=315360000"}
+	header {
+		# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+		?Strict-Transport-Security {$HEADER_HSTS:"max-age=31536000"}
+
+		# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+		?X-Content-Type-Options {$HEADER_CONTENT_TYPE:"nosniff"}
+
+		# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+		?X-Frame-Options {$HEADER_FRAME_OPTIONS:"SAMEORIGIN"}
+
+		# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+		?Referrer-Policy {$HEADER_REFERRER_POLICY:"strict-origin-when-cross-origin"}
+
+		# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+		?X-Xss-Protection {$HEADER_XSS_PROTECTION:"1; mode=block"}
+	}
+	# https://caddyserver.com/docs/caddyfile/directives/encode
+	encode {
+		zstd
+		gzip 6
+	}
+	# https://caddyserver.com/docs/caddyfile/directives/php_fastcgi
+	php_fastcgi bookstack:9000
+	# https://caddyserver.com/docs/caddyfile/directives/file_server
+	file_server
+}

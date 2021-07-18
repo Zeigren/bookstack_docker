@@ -27,8 +27,8 @@
 
 ## Stack
 
-- PHP 7.4-fpm-alpine - BookStack
-- NGINX Alpine
+- PHP 8.0-fpm-alpine - BookStack
+- Caddy
 - MariaDB
 - Redis Alpine
 
@@ -36,9 +36,9 @@
 
 ### [Docker Hub](https://hub.docker.com/r/zeigren/bookstack)
 
-### [GitHub](https://github.com/Zeigren/bookstack_docker)
-
 ### [ghcr.io](https://ghcr.io/zeigren/bookstack_docker)
+
+### [GitHub](https://github.com/Zeigren/bookstack_docker)
 
 ### [Main Repository](https://phabricator.kairohm.dev/diffusion/4/)
 
@@ -46,19 +46,15 @@
 
 ## Usage
 
-Use [Docker Compose](https://docs.docker.com/compose/) or [Docker Swarm](https://docs.docker.com/engine/swarm/) to deploy. There are examples for using NGINX or Traefik for SSL termination, or don't use SSL at all.
+Use [Docker Compose](https://docs.docker.com/compose/) or [Docker Swarm](https://docs.docker.com/engine/swarm/) to deploy. There are examples for using Caddy or Traefik for HTTPS.
 
 ## Configuration
 
-Configuration consists of environment variables in the `.yml` and `.conf` files.
+Configuration consists of setting environment variables in the `.yml` files. More environment variables for configuring BookStack and PHP can be found in `docker-entrypoint.sh` and for Caddy in `bookstack_caddyfile`.
 
-- bookstack_nginx.conf = NGINX config file (only needs to be modified if you're using NGINX for SSL termination)
-- Make whatever changes you need to the appropriate `.yml`. All environment variables for BookStack can be found in `docker-entrypoint.sh`
+Setting the `DOMAIN` variable changes whether Caddy uses HTTP, HTTPS with a self signed certificate, or HTTPS with a certificate from Let's Encrypt or ZeroSSL.
 
-### Using NGINX for SSL Termination
-
-- yourdomain.test.crt = The SSL certificate for your domain (you'll need to create/copy this)
-- yourdomain.test.key = The SSL key for your domain (you'll need to create/copy this)
+Once the container is started you can login with username `admin@admin.com` and password `password`.
 
 ### [Docker Swarm](https://docs.docker.com/engine/swarm/)
 
@@ -70,11 +66,11 @@ Run with `docker stack deploy --compose-file docker-swarm.yml bookstack`
 
 ### [Docker Compose](https://docs.docker.com/compose/)
 
-You'll need to create a `config` folder and put `bookstack_nginx.conf` in it, if you're using NGINX for SSL also put your SSL certificate and SSL key in it.
-
 Run with `docker-compose up -d`. View using `127.0.0.1:9080`.
 
-Once it's started you can login with username `admin@admin.com` and password `password`.
+### File Uploads
+
+Set the `POST_MAX_SIZE`, `UPLOAD_MAX_FILESIZE`, and `MEMORY_LIMIT` variables to whatever you want the max file upload size to be (`MEMORY_LIMIT` should at least be 128M). See the [BookStack documentation](https://www.bookstackapp.com/docs/admin/upload-config) for more information.
 
 ## Issues
 

@@ -1,38 +1,23 @@
 version: "3.7"
 # https://docs.docker.com/compose/compose-file/compose-file-v3/
 services:
-  nginx:
-    image: nginx:alpine
-    # https://hub.docker.com/_/nginx
+  caddy:
+    image: caddy:latest
+    # https://hub.docker.com/_/caddy
     volumes:
       - bookstack_public:/var/www/bookstack/public
-      - ./config/bookstack_nginx.conf:/etc/nginx/templates/nginx.conf.template
-      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
-      # - ./config/yourdomain.test.crt:/etc/nginx/certs/yourdomain.test.crt
-      # - ./config/yourdomain.test.key:/etc/nginx/certs/yourdomain.test.key
+      - caddy_data:/data
+      - ./bookstack_caddyfile:/etc/caddy/Caddyfile
     networks:
       - bookstack
     ports:
-      # CHANGE TO "80:80" IF USING NGINX FOR SSL TERMINATION
+      # CHANGE TO "80:80" IF USING CADDY FOR HTTPS
       - "9080:80"
-      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
+      # UNCOMMENT IF USING CADDY FOR HTTPS
       # - "443:443"
     environment:
-      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_processes
-      - NGINX_WORKER_PROCESSES=auto
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile
-      - NGINX_WORKER_RLIMIT_NOFILE=65535
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_connections
-      - NGINX_WORKER_CONNECTIONS=65535
-      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
-      - NGINX_CLIENT_MAX_BODY_SIZE=0
-      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
-      - NGINX_CLIENT_BODY_TIMEOUT=6666s
-      - NGINX_HOST=bookstack.yourdomain.test
-      # UNCOMMENT IF USING NGINX FOR SSL
-      # - NGINX_SSL_CERT=yourdomain.test.crt
-      # - NGINX_SSL_KEY=yourdomain.test.key
+      # https://caddyserver.com/docs/automatic-https#overview
+      - DOMAIN=:80
 
   mariadb:
     image: mariadb:latest
@@ -73,8 +58,8 @@ services:
 volumes:
   bookstack_db:
   bookstack_storage:
-  bookstack_public_storage:
   bookstack_public:
+  caddy_data:
 
 networks:
   bookstack:

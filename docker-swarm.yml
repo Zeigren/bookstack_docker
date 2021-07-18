@@ -1,43 +1,23 @@
 version: "3.8"
 # https://docs.docker.com/compose/compose-file/compose-file-v3/
 services:
-  nginx:
-    image: nginx:alpine
-    # https://hub.docker.com/_/nginx
+  caddy:
+    image: caddy:latest
+    # https://hub.docker.com/_/caddy
     volumes:
       - bookstack_public:/var/www/bookstack/public
+      - caddy_data:/data
     networks:
       - bookstack
     ports:
-      # CHANGE TO "80:80" IF USING NGINX FOR SSL TERMINATION
-      - "9080:80"
-      # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
-      # - "443:443"
+      - "80:80"
+      - "443:443"
     configs:
-      - source: bookstack_nginx.conf
-        target: /etc/nginx/templates/nginx.conf.template
+      - source: bookstack_caddyfile
+        target: /etc/caddy/Caddyfile
     environment:
-      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_processes
-      - NGINX_WORKER_PROCESSES=auto
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile
-      - NGINX_WORKER_RLIMIT_NOFILE=65535
-      # https://nginx.org/en/docs/ngx_core_module.html#worker_connections
-      - NGINX_WORKER_CONNECTIONS=65535
-      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
-      - NGINX_CLIENT_MAX_BODY_SIZE=0
-      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
-      - NGINX_CLIENT_BODY_TIMEOUT=6666s
-      - NGINX_HOST=bookstack.yourdomain.test
-      # UNCOMMENT IF USING NGINX FOR SSL
-      # - NGINX_SSL_CERT=yourdomain.test.crt
-      # - NGINX_SSL_KEY=yourdomain.test.key
-    # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
-    # secrets:
-    #   - source: yourdomain.test.crt
-    #     target: /etc/nginx/certs/yourdomain.test.crt
-    #   - source: yourdomain.test.key
-    #     target: /etc/nginx/certs/yourdomain.test.key
+      # https://caddyserver.com/docs/automatic-https#overview
+      - DOMAIN=bookstack.yourdomain.test
 
   mariadb:
     image: mariadb:latest
@@ -84,22 +64,18 @@ volumes:
   bookstack_db:
   bookstack_storage:
   bookstack_public:
+  caddy_data:
 
 secrets:
   bookstacksql_root_password:
     external: true
   bookstacksql_password:
     external: true
-  # UNCOMMENT IF USING NGINX FOR SSL TERMINATION
-  # yourdomain.test.crt:
-  #   external: true
-  # yourdomain.test.key:
-  #   external: true
 
 networks:
   bookstack:
   bookstack_db:
 
 configs:
-  bookstack_nginx.conf:
+  bookstack_caddyfile:
     external: true
