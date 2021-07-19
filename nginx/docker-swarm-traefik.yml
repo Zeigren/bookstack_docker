@@ -1,0 +1,95 @@
+version: "3.8"
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
+services:
+  nginx:
+    image: nginx:alpine
+    # https://hub.docker.com/_/nginx
+    volumes:
+      - bookstack_public:/var/www/bookstack/public
+    networks:
+      - bookstack
+      - traefik
+    configs:
+      - source: bookstack_nginx.conf
+        target: /etc/nginx/templates/nginx.conf.template
+    environment:
+      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
+      # https://nginx.org/en/docs/ngx_core_module.html#worker_processes
+      - NGINX_WORKER_PROCESSES=auto
+      # https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile
+      - NGINX_WORKER_RLIMIT_NOFILE=65535
+      # https://nginx.org/en/docs/ngx_core_module.html#worker_connections
+      - NGINX_WORKER_CONNECTIONS=65535
+      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
+      - NGINX_CLIENT_MAX_BODY_SIZE=0
+      # https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
+      - NGINX_CLIENT_BODY_TIMEOUT=6666s
+      - NGINX_HOST=bookstack.yourdomain.test
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.bookstack.entrypoints=websecure"
+        - "traefik.http.routers.bookstack.rule=Host(`bookstack.yourdomain.test`)"
+        - "traefik.http.services.bookstack.loadbalancer.server.port=80" # Port traefik needs to route traffic to
+
+  mariadb:
+    image: mariadb:latest
+    # https://hub.docker.com/_/mariadb
+    volumes:
+      - bookstack_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/bookstacksql_root_password
+      - MYSQL_DATABASE=bookstack
+      - MYSQL_USER=bookstack
+      - MYSQL_PASSWORD_FILE=/run/secrets/bookstacksql_password
+    secrets:
+      - bookstacksql_root_password
+      - bookstacksql_password
+    networks:
+      - bookstack_db
+
+  bookstack:
+    image: zeigren/bookstack:latest # ghcr.io/zeigren/bookstack_docker:latest
+    # https://hub.docker.com/r/zeigren/bookstack
+    environment:
+      - DB_HOST=mariadb:3306
+      - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
+      - APP_URL=https://bookstack.yourdomain.test
+      # Can be 'local', 'local_secure' or 's3'
+      - STORAGE_TYPE=local
+      - REDIS_SERVERS=redis:6379:0
+    volumes:
+      - bookstack_storage:/var/www/bookstack/storage
+      - bookstack_public:/var/www/bookstack/public
+    networks:
+      - bookstack
+      - bookstack_db
+    secrets:
+      - bookstacksql_password
+
+  redis:
+    image: redis:alpine
+    # https://hub.docker.com/_/redis
+    networks:
+      - bookstack
+
+volumes:
+  bookstack_db:
+  bookstack_storage:
+  bookstack_public:
+
+secrets:
+  bookstacksql_root_password:
+    external: true
+  bookstacksql_password:
+    external: true
+
+networks:
+  bookstack:
+  bookstack_db:
+  traefik:
+    external: true
+
+configs:
+  bookstack_nginx.conf:
+    external: true
