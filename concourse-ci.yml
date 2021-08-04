@@ -22,6 +22,7 @@ resources:
       repository: ghcr.io/zeigren/bookstack_docker
       username: Zeigren
       password: ((github_token.token))
+      tag: latest
 
   - name: dockerhub-image
     type: registry-image
@@ -32,6 +33,7 @@ resources:
       repository: zeigren/bookstack
       username: zeigren
       password: ((dockerhub_password.password))
+      tag: latest
 
 # https://concourse-ci.org/jobs.html
 jobs:
@@ -68,10 +70,8 @@ jobs:
           - put: github-image
             params:
               image: image/image.tar
-              version: ((.:version-tag))
-              bump_aliases: true
+              additional_tags: git-repo/version
           - put: dockerhub-image
             params:
               image: image/image.tar
-              version: ((.:version-tag))
-              bump_aliases: true
+              additional_tags: git-repo/version
