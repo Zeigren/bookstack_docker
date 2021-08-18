@@ -45,6 +45,8 @@ services:
     volumes:
       - bookstack_storage:/var/www/bookstack/storage
       - bookstack_public:/var/www/bookstack/public
+    depends_on:
+      - mariadb
     networks:
       - bookstack
       - bookstack_db
