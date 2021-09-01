@@ -36,26 +36,28 @@ services:
     image: zeigren/bookstack:latest # ghcr.io/zeigren/bookstack_docker:latest
     # https://hub.docker.com/r/zeigren/bookstack
     environment:
-      - DB_HOST=mariadb:3306
       - DB_PASSWORD=CHANGEME
       - APP_URL=https://bookstack.yourdomain.test
       # Can be 'local', 'local_secure' or 's3'
       - STORAGE_TYPE=local
-      - REDIS_SERVERS=redis:6379:0
+      # Run first without APP_KEY to have the container create one
+      # - APP_KEY=
     volumes:
       - bookstack_storage:/var/www/bookstack/storage
       - bookstack_public:/var/www/bookstack/public
     depends_on:
       - mariadb
+      - redis
     networks:
       - bookstack
       - bookstack_db
+      - redis
 
   redis:
     image: redis:alpine
     # https://hub.docker.com/_/redis
     networks:
-      - bookstack
+      - redis
 
 volumes:
   bookstack_db:
@@ -66,3 +68,4 @@ volumes:
 networks:
   bookstack:
   bookstack_db:
+  redis:

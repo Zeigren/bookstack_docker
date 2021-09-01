@@ -7,7 +7,6 @@ resources:
     type: git
     icon: git
     public: true
-    # check_every: 24h
     source:
       uri: https://github.com/Zeigren/bookstack_docker.git
       branch: main

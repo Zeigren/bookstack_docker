@@ -38,12 +38,11 @@ services:
     volumes:
       - bookstack_db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/bookstacksql_root_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/bookstacksql_password
       - MYSQL_DATABASE=bookstack
       - MYSQL_USER=bookstack
       - MYSQL_PASSWORD_FILE=/run/secrets/bookstacksql_password
     secrets:
-      - bookstacksql_root_password
       - bookstacksql_password
     networks:
       - bookstack_db
@@ -52,26 +51,28 @@ services:
     image: zeigren/bookstack:latest # ghcr.io/zeigren/bookstack_docker:latest
     # https://hub.docker.com/r/zeigren/bookstack
     environment:
-      - DB_HOST=mariadb:3306
       - DB_PASSWORD=DOCKER-SECRET->bookstacksql_password
       - APP_URL=https://bookstack.yourdomain.test
       # Can be 'local', 'local_secure' or 's3'
       - STORAGE_TYPE=local
-      - REDIS_SERVERS=redis:6379:0
+      # Run first without APP_KEY to have the container create one
+      # - APP_KEY=DOCKER-SECRET->bookstack_app_key
     volumes:
       - bookstack_storage:/var/www/bookstack/storage
       - bookstack_public:/var/www/bookstack/public
     networks:
       - bookstack
       - bookstack_db
+      - redis
     secrets:
       - bookstacksql_password
+      - bookstack_app_key
 
   redis:
     image: redis:alpine
     # https://hub.docker.com/_/redis
     networks:
-      - bookstack
+      - redis
 
 volumes:
   bookstack_db:
@@ -79,14 +80,15 @@ volumes:
   bookstack_public:
 
 secrets:
-  bookstacksql_root_password:
-    external: true
   bookstacksql_password:
+    external: true
+  bookstack_app_key:
     external: true
 
 networks:
   bookstack:
   bookstack_db:
+  redis:
   traefik:
     external: true
 

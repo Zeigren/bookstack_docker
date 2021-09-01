@@ -18,6 +18,7 @@
 ## Tags
 
 - latest
+- v21.08
 - 21.05.4
 - 21.05.3
 - 21.05.2
@@ -88,6 +89,12 @@ Set the `POST_MAX_SIZE`, `UPLOAD_MAX_FILESIZE`, and `MEMORY_LIMIT` variables to 
 The web servers set the relevant HTTP headers to have browsers cache as much as they can for as long as they can while requiring browsers to check if those files have changed, this is to get the benefit of caching without having to deal with the caches potentially serving old content. If content doesn't change that often or can be invalidated in another way then this behavior can be changed to reduce the number of requests.
 
 By default I set PHP to scale up child processes based on demand, this is great for a low resource and light usage environment but setting this to be dynamic or static will yield better performance. Check the PHP Configuration section in `docker-entrypoint.sh` for some tuning options to set and/or research.
+
+## File Permissions
+
+If using docker volumes and the default user (`www-data` with a UID and GID of `82`) you shouldn't need to do anything. However if you run the container as a different [user](https://docs.docker.com/compose/compose-file/compose-file-v3/#domainname-hostname-ipc-mac_address-privileged-read_only-shm_size-stdin_open-tty-user-working_dir) or have any permissions issues you may need to change the permissions for `/var/www/bookstack`.
+
+One way to change the permissions would be to the change the [entrypoint](https://docs.docker.com/compose/compose-file/compose-file-v3/#entrypoint) for the BookStack container in the `.yml` file to `entrypoint: sleep 900m` and attach to the container as `root` and run `chown -R www-data:www-data /var/www/bookstack`, or instead of attaching to the container you could run `docker exec -it --user root BOOKSTACK_CONTAINER /bin/sh -c "chown -R www-data:www-data /var/www/bookstack"`
 
 ## Inspiration
 

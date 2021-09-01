@@ -4,6 +4,65 @@ source /env_secrets_expand.sh
 
 set -e
 
+# Generate new APP_KEY if none is provided
+if [ -z "$APP_KEY" ]; then
+  echo "Please re-run this container with an environment variable APP_KEY"
+  echo "An example APP_KEY you could use is: "
+  php artisan key:generate --show
+  exit
+fi
+
+# Check and fix folder permissions
+if [ $(whoami) = "www-data" ]; then
+  if [ $(stat -c '%u%g' ${BOOKSTACK_HOME}) != 8282 ]; then
+    echo "Please fix the permissions for ${BOOKSTACK_HOME}"
+    echo "Attach to the BookStack container as root and run:"
+    echo "chown -R www-data:www-data ${BOOKSTACK_HOME}"
+    echo "You can check the README for more info"
+    exit
+  fi
+
+  if [ $(stat -c '%u%g' ${BOOKSTACK_HOME}/public) != 8282 ]; then
+    echo "Please fix the permissions for ${BOOKSTACK_HOME}/public"
+    echo "Attach to the BookStack container as root and run:"
+    echo "chown -R www-data:www-data ${BOOKSTACK_HOME}/public"
+    echo "You can check the README for more info"
+    exit
+  fi
+
+  if [ $(stat -c '%u%g' ${BOOKSTACK_HOME}/storage) != 8282 ]; then
+    echo "Please fix the permissions for ${BOOKSTACK_HOME}/storage"
+    echo "Attach to the BookStack container as root and run:"
+    echo "chown -R www-data:www-data ${BOOKSTACK_HOME}/storage"
+    echo "You can check the README for more info"
+    exit
+  fi
+fi
+
+if [ $(stat -c '%a' ${BOOKSTACK_HOME}/public/uploads) != 755 ]; then
+  echo "Setting folder permissions for ${BOOKSTACK_HOME}/public/uploads"
+  if [ -f "${BOOKSTACK_HOME}/public/uploads/.gitignore" ]; then
+    rm -f ${BOOKSTACK_HOME}/public/uploads/.gitignore
+  fi
+  if [ -f "${BOOKSTACK_HOME}/public/uploads/.htaccess" ]; then
+    rm -f ${BOOKSTACK_HOME}/public/uploads/.htaccess
+  fi
+  chmod -R 755 ${BOOKSTACK_HOME}/public/uploads
+fi
+
+if [ $(stat -c '%a' ${BOOKSTACK_HOME}/storage/uploads) != 755 ]; then
+  echo "Setting folder permissions for ${BOOKSTACK_HOME}/storage/uploads"
+  chmod -R 755 ${BOOKSTACK_HOME}/storage/uploads
+fi
+
+if [ $(stat -c '%a' ${BOOKSTACK_HOME}/bootstrap/cache) != 755 ]; then
+  echo "Setting folder permissions for ${BOOKSTACK_HOME}/bootstrap/cache"
+  chmod -R 755 ${BOOKSTACK_HOME}/bootstrap/cache
+fi
+
+# Copy over public static files
+cp -rf ${BOOKSTACK_HOME}/tmp_public ${BOOKSTACK_HOME}/public
+
 # BookStack Configuration
 # https://www.bookstackapp.com/docs/
 # https://github.com/BookStackApp/BookStack/blob/master/.env.example.complete
@@ -21,7 +80,7 @@ APP_DEBUG=${APP_DEBUG:-false}
 
 # Application key
 # Used for encryption where needed.
-APP_KEY=${APP_KEY:-SomeRandomStringWith32Characters}
+APP_KEY=${APP_KEY}
 
 # Application URL
 # This must be the root URL that you want to host BookStack on.
@@ -46,7 +105,7 @@ APP_TIMEZONE=${APP_TIMEZONE:-UTC}
 APP_THEME=${APP_THEME:-false}
 
 # Database details
-DB_HOST=${DB_HOST:-mariadb:3306}
+DB_HOST=${DB_HOST:-mariadb}
 DB_PORT=${DB_PORT:-3306}
 DB_DATABASE=${DB_DATABASE:-bookstack}
 DB_USERNAME=${DB_USERNAME:-bookstack}
@@ -75,7 +134,6 @@ SESSION_DRIVER=${SESSION_DRIVER:-redis}
 # Session configuration
 SESSION_LIFETIME=${SESSION_LIFETIME:-120}
 SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME:-bookstack_session}
-SESSION_COOKIE_PATH=${SESSION_COOKIE_PATH:-/}
 SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-false}
 
 # Cache key prefix
@@ -278,6 +336,12 @@ ALLOW_CONTENT_SCRIPTS=${ALLOW_CONTENT_SCRIPTS:-false}
 # Contents of the robots.txt file can be overridden, making this option obsolete.
 ALLOW_ROBOTS=${ALLOW_ROBOTS:-null}
 
+# Allow server-side fetches to be performed to potentially unknown
+# and user-provided locations. Primarily used in exports when loading
+# in externally referenced assets.
+# Can be 'true' or 'false'.
+ALLOW_UNTRUSTED_SERVER_FETCHING=${ALLOW_UNTRUSTED_SERVER_FETCHING:-false}
+
 # A list of hosts that BookStack can be iframed within.
 # Space separated if multiple. BookStack host domain is auto-inferred.
 # For Example: ALLOWED_IFRAME_HOSTS="https://example.com https://a.example.com"
@@ -327,53 +391,13 @@ sed -i "s/;pm.process_idle_timeout =.*/pm.process_idle_timeout = ${FPM_PROCESS_I
 
 # -------------------------------------------------------------------------------
 
-echo "Test connection to ${DB_HOST}"
+echo "Test connection to ${DB_HOST:-mariadb}"
 
-/wait-for.sh ${DB_HOST} -- echo 'Success!'
+/wait-for.sh ${DB_HOST:-mariadb}\:${DB_PORT:-3306} -- echo 'Success!'
 
-echo "Give ${DB_HOST} a few seconds to warm up"
+echo "Give ${DB_HOST:-mariadb} a few seconds to warm up"
 
-sleep 5s
-
-export BOOKSTACK_VERSION="$(grep -Eo '[0-9.]+' ${BOOKSTACK_HOME}/version)"
-mkdir -p /var/www/tmp
-curl -sSL -o /var/www/BookStack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz
-tar --strip-components=1 -C /var/www/tmp -xf /var/www/BookStack.tar.gz
-cp -rf /var/www/tmp/public ${BOOKSTACK_HOME}
-rm /var/www/BookStack.tar.gz
-rm -rf /var/www/tmp
-
-if [[ $(stat -c '%u%g' ${BOOKSTACK_HOME}) != 8282 ]]; then
-  echo "Setting BookStack permissions"
-  chown -R www-data:www-data $BOOKSTACK_HOME
-fi
-
-if [[ $(stat -c '%u%g' public) != 8282 ]]; then
-  echo "Setting folder permissions for public"
-  chown -R www-data:www-data public
-fi
-
-if [[ $(stat -c '%u%g' storage) != 8282 ]]; then
-  echo "Setting folder permissions for storage"
-  chown -R www-data:www-data storage
-fi
-
-if [[ $(stat -c '%u%g%a' public/uploads) != 8282775 ]]; then
-  echo "Setting folder permissions for public/uploads"
-  chown -R www-data:www-data public && chmod -R 775 public/uploads
-fi
-
-if [[ $(stat -c '%u%g%a' storage/uploads) != 8282775 ]]; then
-  echo "Setting folder permissions for storage/uploads"
-  chown -R www-data:www-data storage && chmod -R 775 storage/uploads
-fi
-
-if [[ $(stat -c '%u%g%a' bootstrap/cache) != 8282775 ]]; then
-  echo "Setting folder permissions for bootstrap/cache"
-  chown -R www-data:www-data bootstrap/cache && chmod -R 775 bootstrap/cache
-fi
-
-php artisan key:generate --force
+sleep ${DB_WAIT:-5}s
 
 php artisan migrate --force
 
