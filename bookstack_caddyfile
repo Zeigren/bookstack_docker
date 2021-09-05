@@ -14,7 +14,7 @@
 	header /upload/* Cache-Control {$CACHE_UPLOAD:"no-cache, public, must-revalidate, proxy-revalidate, max-age=315360000"}
 	# Following headers are only set if they don't exist
 	@cachedFiles {
-		path *.aac *.avi *.css *.eot *.flv *.gif *.heic *.ico *.jpeg *.jpg *.js *.m4a *.map *.mid *.midi *.mov *.mp3 *.mp4 *.mpeg *.mpg *.ogg *.ogv *.otf *.png *.svg *.svgz *.tif *.tiff *.ttc *.ttf *.wav *.webm *.webp *.wmv *.woff *.woff2
+		path *.js *.svg *.css *.woff *.eot *.ttf *.png *.gif *.ico *.jpeg *.jpg *.webp *.woff2
 	}
 	header @cachedFiles ?Cache-Control {$CACHE_FILES:"no-cache, public, must-revalidate, proxy-revalidate, max-age=315360000"}
 	header {
